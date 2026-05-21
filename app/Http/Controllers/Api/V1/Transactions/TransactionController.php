@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1\Transactions;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Import\ImporterFichiers;
+use App\Models\Transaction;
+use Log;
+
+class TransactionController extends Controller
+{
+   /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request,$id)
+    {
+        try{
+            $transaction = Transaction::findOrFail($id);
+            $this->authorize('view', $transaction);
+            $result = $transaction->lire($request);
+            return response()->json($result, $result['code_http']);
+        }catch(\Illuminate\Auth\Access\AuthorizationException $e){
+            Log::error('Transactions/TransactionController@show a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+            return response()->json(['http_code'=>403, 'code'=>403, 'code_message'=>'Requête non autorisée.'], 403);
+        }catch(\Exception $e){
+            Log::error('Transactions/TransactionController@show a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+        }
+    }
+    /**
+    * Update the specified resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+    public function update(Request $request, $id)
+    {
+      try{
+          $transaction = Transaction::findOrFail($id);
+          $this->authorize('update', $transaction);
+          $result = $transaction->modifier($request);
+          return response()->json($result, $result['code_http']);
+      }catch(\Illuminate\Auth\Access\AuthorizationException $e){
+          Log::error('TransactionController@update a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+          return response()->json(['http_code'=>403, 'code'=>403, 'code_message'=>'Requête non autorisée.'], 403);
+      }catch(\Exception $e){
+          Log::error('TransactionController@update a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+      }
+    }
+}

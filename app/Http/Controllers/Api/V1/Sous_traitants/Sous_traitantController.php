@@ -1,0 +1,98 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1\Sous_traitants;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Sous_traitant;
+use Illuminate\Support\Facades\Log;
+
+class Sous_traitantController extends Controller
+{
+    //
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+      //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+      try{
+        $sous_traitant=Sous_traitant::findOrFail($id);
+        $this->authorize('view', $sous_traitant);
+        $result = $sous_traitant->lire($request);
+        return response()->json($result, $result['code_http']);
+      }catch(\Illuminate\Auth\Access\AuthorizationException $e){
+        Log::error('Sous_traitants/Sous_traitantController@update a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+        return response()->json(['http_code'=>403, 'code'=>403, 'code_message'=>'Requête non autorisée.'], 403);
+      }catch(\Exception $e){
+        Log::error('Sous_traitants/Sous_traitantController@update a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+      }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+      try{
+        $sous_traitant=Sous_traitant::findOrFail($id);
+        $this->authorize('update', $sous_traitant);
+        $result = $sous_traitant->modifier($request);
+        return response()->json($result, $result['code_http']);
+      }catch(\Illuminate\Auth\Access\AuthorizationException $e){
+        Log::error('Sous_traitants/Sous_traitantController@show a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+        return response()->json(['http_code'=>403, 'code'=>403, 'code_message'=>'Requête non autorisée.'], 403);
+      }catch(\Exception $e){
+        Log::error('Sous_traitants/Sous_traitantController@show a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+      } 
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+      try{
+        $sous_traitant=Sous_traitant::findOrFail($id);
+        $this->authorize('delete', $sous_traitant);
+        $result = $sous_traitant->supprimer($request);
+        return response()->json($result, $result['code_http']);
+      }catch(\Illuminate\Auth\Access\AuthorizationException $e){
+        Log::error('Sous_traitants/Sous_traitantController@destroy a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+        return response()->json(['http_code'=>403, 'code'=>403, 'code_message'=>'Requête non autorisée.'], 403);
+      }catch(\Exception $e){
+        Log::error('Sous_traitants/Sous_traitantController@destroy a échoué avec le message ' . $e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+      }
+    }
+
+}
