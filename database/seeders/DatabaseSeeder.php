@@ -33,7 +33,8 @@ class DatabaseSeeder extends Seeder
           // DecompteSeeder::class,
           // EntrepriseSeeder::class,
           //ComptaAnalytiqueSeeder::class,
-           EntrepriseSeeder::class,
+          RolesPermissionsSeeder::class,
+          EntrepriseSeeder::class,
       ]);
     }
 }

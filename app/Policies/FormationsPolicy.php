@@ -15,43 +15,81 @@ class FormationsPolicy
     {
         //
     }
-
+ 
     public function viewAny(?Utilisateur $user)
     {
         if (is_null($user)) {
-            return Response::deny('Requete non autorisee.');
+            return Response::deny('Requête non autorisée.');
         }
 
-        return Response::allow();
+        return $this->can($user, 'viewAny')
+            ? Response::allow()
+            : Response::deny('Requête non autorisée.');
     }
 
     public function view(?Utilisateur $user, Formation $formation)
     {
         if (is_null($user)) {
-            return Response::deny('Requete non autorisee.');
+            return Response::deny('Requête non autorisée.');
         }
 
-        return Response::allow();
+        return $this->can($user, 'view')
+            ? Response::allow()
+            : Response::deny('Requête non autorisée.');
     }
 
     public function create(?Utilisateur $user)
     {
-        return !is_null($user) && in_array($user->type_utilisateur, [Utilisateur::TYPE_UTILISATEUR_ADMIN, Utilisateur::TYPE_UTILISATEUR_POWER_USER])
+        if (is_null($user)) {
+            return Response::deny('Requête non autorisée.');
+        }
+
+        return $this->can($user, 'create')
             ? Response::allow()
-            : Response::deny('Requete non autorisee.');
+            : Response::deny('Requête non autorisée.');
     }
 
     public function update(?Utilisateur $user, Formation $formation)
     {
-        return !is_null($user) && in_array($user->type_utilisateur, [Utilisateur::TYPE_UTILISATEUR_ADMIN, Utilisateur::TYPE_UTILISATEUR_POWER_USER])
+        if (is_null($user)) {
+            return Response::deny('Requête non autorisée.');
+        }
+
+        return $this->can($user, 'update')
             ? Response::allow()
-            : Response::deny('Requete non autorisee.');
+            : Response::deny('Requête non autorisée.');
     }
 
     public function delete(?Utilisateur $user, Formation $formation)
     {
-        return !is_null($user) && in_array($user->type_utilisateur, [Utilisateur::TYPE_UTILISATEUR_ADMIN, Utilisateur::TYPE_UTILISATEUR_POWER_USER])
+        if (is_null($user)) {
+            return Response::deny('Requête non autorisée.');
+        }
+
+        return $this->can($user, 'delete')
             ? Response::allow()
-            : Response::deny('Requete non autorisee.');
+            : Response::deny('Requête non autorisée.');
+    }
+
+    private function can(Utilisateur $user, string $ability): bool
+    {
+        if ($user->hasRole('ADMIN')) {
+            return true;
+        }
+
+        $permissionLabels = [
+            "formation.{$ability}",
+            "formation_resource.{$ability}",
+            "formations.{$ability}",
+            "formations_resource.{$ability}",
+        ];
+
+        foreach ($permissionLabels as $permissionLabel) {
+            if ($user->hasPermission($permissionLabel)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

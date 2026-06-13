@@ -8,7 +8,7 @@ use App\Utility\PolicyResources\Formations as FormationsResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class FormationsController extends Controller
+class FormationsController extends Controller 
 {
     public function index(Request $request)
     {

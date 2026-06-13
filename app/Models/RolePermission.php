@@ -21,7 +21,6 @@ class RolePermission extends Model
     protected $fillable = [
         'ROLE_ID',
         'PERMISSION_ID',
-        'UTILISATEUR_ID',
         'FONCTIONNALITE_ID',
         'IS_DELETE',
     ];
@@ -29,7 +28,6 @@ class RolePermission extends Model
     protected $casts = [
         'ROLE_ID' => 'integer',
         'PERMISSION_ID' => 'integer',
-        'UTILISATEUR_ID' => 'integer',
         'FONCTIONNALITE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
@@ -49,7 +47,6 @@ class RolePermission extends Model
             if (!empty($search)) {
                 $query->where('ROLE_ID', 'like', '%' . $search . '%')
                     ->orWhere('PERMISSION_ID', 'like', '%' . $search . '%')
-                    ->orWhere('UTILISATEUR_ID', 'like', '%' . $search . '%')
                     ->orWhere('FONCTIONNALITE_ID', 'like', '%' . $search . '%');
             }
 
@@ -90,7 +87,6 @@ class RolePermission extends Model
             $validator = Validator::make($inputs, [
                 'ROLE_ID' => 'required|integer|exists:TB_ROLE,ID',
                 'PERMISSION_ID' => 'required|integer|exists:TB_PERMISSION,ID',
-                'UTILISATEUR_ID' => 'nullable|integer|exists:utilisateurs,id',
                 'FONCTIONNALITE_ID' => 'nullable|integer|exists:TB_FONCTIONNALITE,ID',
             ]);
 
@@ -156,7 +152,6 @@ class RolePermission extends Model
             $validator = Validator::make($inputs, [
                 'ROLE_ID' => 'nullable|integer|exists:TB_ROLE,ID',
                 'PERMISSION_ID' => 'nullable|integer|exists:TB_PERMISSION,ID',
-                'UTILISATEUR_ID' => 'nullable|integer|exists:utilisateurs,id',
                 'FONCTIONNALITE_ID' => 'nullable|integer|exists:TB_FONCTIONNALITE,ID',
             ]);
 

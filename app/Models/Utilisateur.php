@@ -11,6 +11,8 @@ use Validator;
 use Illuminate\Support\Facades\Hash;
 use Config;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Role;
+use App\Models\Permission;
 /*use Illuminate\Support\Facades\Mail;
 use App\Mail\CreationUtilisateurMail;
 use App\Mail\ReinitialiserMotDePasseMail;*/
@@ -79,6 +81,55 @@ class Utilisateur extends Authenticatable
     public function employe()
     {
         return $this->hasOne(Employe::class, 'USER_ID', 'id');
+    }
+
+    /**
+     * Roles relation
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'TB_UTILISATEUR_ROLE', 'UTILISATEUR_ID', 'ROLE_ID');
+    }
+
+    /**
+     * Check if utilisateur has a role
+     */
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles()->where('LIBELLE', $role)->exists();
+        }
+        $roleId = is_object($role) ? ($role->ID ?? null) : $role;
+        return $this->roles()->where('ID', $roleId)->exists();
+    }
+
+    /**
+     * Check permission via roles
+     */
+    public function hasPermission($permission)
+    {
+        if (is_string($permission)) {
+            return $this->roles()->whereHas('permissions', function($q) use ($permission) {
+                $q->where('LIBELLE', $permission);
+            })->exists();
+        }
+        $permissionId = is_object($permission) ? ($permission->ID ?? null) : $permission;
+        return $this->roles()->whereHas('permissions', function($q) use ($permissionId) {
+            $q->where('ID', $permissionId);
+        })->exists();
+    }
+
+    /**
+     * Assign role to user
+     */
+    public function assignRole($role)
+    {
+        if (is_string($role)) {
+            $role = Role::where('LIBELLE', $role)->first();
+        }
+        if ($role) {
+            $this->roles()->syncWithoutDetaching([$role->ID]);
+        }
     }
 
     public static function reinitialiserMotDePasse(Request $request)

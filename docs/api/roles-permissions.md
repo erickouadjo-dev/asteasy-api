@@ -1,4 +1,4 @@
-﻿# API Documentation - Roles Permissions
+# API Documentation - Roles Permissions
 
 ## Apercu
 Cette documentation couvre les endpoints CRUD de la ressource `roles-permissions`.
@@ -18,7 +18,6 @@ Cette documentation couvre les endpoints CRUD de la ressource `roles-permissions
   "ID": 1,
   "ROLE_ID": 2,
   "PERMISSION_ID": 5,
-  "UTILISATEUR_ID": 1,
   "FONCTIONNALITE_ID": 3,
   "IS_DELETE": false,
   "created_at": "2026-05-09T12:00:00.000000Z",
@@ -37,7 +36,7 @@ Cette documentation couvre les endpoints CRUD de la ressource `roles-permissions
 Parametres query optionnels:
 - `per_page` (int, defaut: `15`)
 - `page` (int, defaut: `1`)
-- `search` (string, filtre sur `ROLE_ID`, `PERMISSION_ID`, `UTILISATEUR_ID`, `FONCTIONNALITE_ID`)
+- `search` (string, filtre sur `ROLE_ID`, `PERMISSION_ID`, `FONCTIONNALITE_ID`)
 
 Exemple:
 ```bash
@@ -55,7 +54,6 @@ Reponse 200:
       "ID": 1,
       "ROLE_ID": 2,
       "PERMISSION_ID": 5,
-      "UTILISATEUR_ID": 1,
       "FONCTIONNALITE_ID": 3,
       "IS_DELETE": false,
       "created_at": "2026-05-09T12:00:00.000000Z",
@@ -83,7 +81,6 @@ Reponse 200:
 Body JSON:
 - `ROLE_ID` (integer, requis, doit exister dans `TB_ROLE.ID`)
 - `PERMISSION_ID` (integer, requis, doit exister dans `TB_PERMISSION.ID`)
-- `UTILISATEUR_ID` (integer, optionnel, doit exister dans `utilisateurs.id`)
 - `FONCTIONNALITE_ID` (integer, optionnel, doit exister dans `TB_FONCTIONNALITE.ID`)
 
 Exemple:
@@ -94,7 +91,6 @@ curl -X POST "https://asteasy.deepinovia.com/api/api/v1/roles-permissions" \
   -d '{
     "ROLE_ID": 2,
     "PERMISSION_ID": 5,
-    "UTILISATEUR_ID": 1,
     "FONCTIONNALITE_ID": 3
   }'
 ```
@@ -108,7 +104,6 @@ Reponse 201:
     "ID": 2,
     "ROLE_ID": 2,
     "PERMISSION_ID": 5,
-    "UTILISATEUR_ID": 1,
     "FONCTIONNALITE_ID": 3,
     "IS_DELETE": false,
     "created_at": "2026-05-09T12:10:00.000000Z",
@@ -138,7 +133,6 @@ Reponse 200:
     "ID": 2,
     "ROLE_ID": 2,
     "PERMISSION_ID": 5,
-    "UTILISATEUR_ID": 1,
     "FONCTIONNALITE_ID": 3,
     "IS_DELETE": false,
     "created_at": "2026-05-09T12:10:00.000000Z",
@@ -157,7 +151,6 @@ Reponse 200:
 Body JSON (optionnel):
 - `ROLE_ID` (integer, optionnel, doit exister dans `TB_ROLE.ID`)
 - `PERMISSION_ID` (integer, optionnel, doit exister dans `TB_PERMISSION.ID`)
-- `UTILISATEUR_ID` (integer, optionnel, doit exister dans `utilisateurs.id`)
 - `FONCTIONNALITE_ID` (integer, optionnel, doit exister dans `TB_FONCTIONNALITE.ID`)
 
 Exemple:
@@ -180,7 +173,6 @@ Reponse 200:
     "ID": 2,
     "ROLE_ID": 2,
     "PERMISSION_ID": 7,
-    "UTILISATEUR_ID": 1,
     "FONCTIONNALITE_ID": 4,
     "IS_DELETE": false,
     "created_at": "2026-05-09T12:10:00.000000Z",
@@ -214,7 +206,6 @@ Reponse 200:
     "ID": 2,
     "ROLE_ID": 2,
     "PERMISSION_ID": 7,
-    "UTILISATEUR_ID": 1,
     "FONCTIONNALITE_ID": 4,
     "IS_DELETE": true,
     "created_at": "2026-05-09T12:10:00.000000Z",

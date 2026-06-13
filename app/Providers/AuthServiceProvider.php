@@ -237,81 +237,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         //'App\Models\Model' => 'App\Policies\ModelPolicy',
-        UtilisateursResource::class => UtilisateursPolicy::class,
-        UtilisateurResource::class => UtilisateurPolicy::class,
-        AuthentifierResource::class => AuthentifierPolicy::class,
-        DeconnecterResource::class => DeconnecterPolicy::class,
-        ReinitialiserMotDePasseResource::class => ReinitialiserMotDePassePolicy::class,
-        ProgrammesResource::class => ProgrammesPolicy::class,
-        RubriquesResource::class => RubriquesPolicy::class,
-        RubriqueResource::class => RubriquePolicy::class,
-        ProgrammeResource::class => ProgrammePolicy::class,
-        RubriquesRubriqueActivitesResource::class => ActivitesPolicy::class,
-        ActiviteResource::class => ActivitePolicy::class,
-        Activite_ProgrammeResource::class => Activite_ProgrammePolicy::class,
-        UploadsResource::class => UploadsPolicy::class,
-        DepartementsResource::class => DepartementsPolicy::class,
-        PrestatairesResource::class => PrestatairesPolicy::class,
-        PrestataireResource::class => PrestatairePolicy::class,
-        MarchesResource::class => MarchesPolicy::class,
-        MarcheResource::class => MarchePolicy::class,
-        Sous_traitantsResource::class => Sous_traitantsPolicy::class,
-        Sous_traitantResource::class => Sous_traitantPolicy::class,
-        DecomptesResource::class => DecomptesPolicy::class,
-        DecompteResource::class => DecomptePolicy::class,
-        DecomptesDecompteValiderResource::class => ValiderPolicy::class,
-        DecaissementsResource::class => DecaissementsPolicy::class,
-        DecaissementResource::class => DecaissementPolicy::class,
-        OrdreVirementsResource::class => OrdreVirementsPolicy::class,
-        OrdreVirementResource::class => OrdreVirementPolicy::class,
-        TransactionsResource::class => TransactionsPolicy::class,
-        IndicateursResource::class => IndicateursPolicy::class,
-        TransactionResource::class => TransactionPolicy::class,
-        TransactionsTypesResource::class => TypesPolicy::class,
-        RecapitulatifResource::class => RecapitulatifPolicy::class,
-        LeveeFondResource::class => LeveeFondsPolicy::class,
-        LeveeFondsResource::class => LeveeFondsPolicy::class,
-        ExercicesFiscauxResource::class => ExercicesFiscauxPolicy::class,
-        ComptesBancairesCompteBancaireTransactionsResource::class => ComptesBancairesCompteBancaireTransactionsPolicy::class,
-        ExerciceFiscalResource::class => ExerciceFiscalPolicy::class,
-        LeveeFondResource::class => LeveeFondPolicy::class,
-        FinancesRecapitulatifResource::class => FinancesRecapitulatifPolicy::class,
-        FinancesRecettesResource::class => FinancesRecettesPolicy::class,
-        FinancesChargesResource::class => FinancesChargesPolicy::class,
-        BusinessPlansBpHypotheses::class => BusinessPlansBpHypothesesPolicy::class,
-        BusinessPlansBpInvestissements::class => BusinessPlansBpInvestissementsPolicy::class,
-        BusinessPlans::class => BusinessPlansPolicy::class,
-        DecomptesCommentairesCommentairesResource::class => CommentairesPolicy::class,
-        DecomptesPartielsResource::class => DecomptesPartielsPolicy::class,
-        DecomptePartielResource::class => DecomptePartielPolicy::class,
-        ProjectionTarifsResource::class => ProjectionTarifsPolicy::class,
-        BusinessPlansInvestissementsType3::class => BusinessPlansInvestissementsTypes3Policy::class,
-        BusinessPlansInvestissementsType4::class => BusinessPlansInvestissementsTypes4Policy::class,
-        BusinessPlansInvestissementsType5::class => BusinessPlansInvestissementsTypes5Policy::class,
-        BusinessPlansInvestissementsType6::class => BusinessPlansInvestissementsTypes6Policy::class,
-        AuditsResource::class => AuditsPolicy::class,
-        AuditResource::class => AuditPolicy::class,
-        ComptesBancairesResource::class => ComptesBancairesPolicy::class,
-        PlanComptablesResource::class => PlanComptablesPolicy::class,
-        ProfilEmployesResource::class => ProfilEmployesPolicy::class,
-        SaisieOperationsResource::class => SaisieOperationsPolicy::class,
-        ImporterResource::class => ImporterPolicy::class,
-        AvenantsResource::class => MarchesAvenantsPolicy::class,
-        AvenantResource::class => MarchesAvenantsAvenantPolicy::class,
-        AccordsFinancementsResource::class => MarchesAccordsFinancementsPolicy::class,
-        AccordFinancementResource::class => MarchesAccordsFinancementAccordFinancementPolicy::class,
-        MissionControlsResource::class => MissionControlsPolicy::class,
-        MissionControlResource::class => MissionControlPolicy::class,
-        BanquesResource::class => BanquesPolicy::class,
-        ExecutionsBudgetairesResource::class => ExecutionsBudgetairesPolicy::class,
-        JournauxResource::class => JournauxPolicy::class,
-        BilanComptableResource::class => BilanComptablesPolicy::class,
-        BanqueResource::class => BanquePolicy::class,
-        CompteBancaireResource::class => CompteBancairePolicy::class,
-        ComptabiliteGlobalesResource::class => ComptabiliteGlobalePolicy::class,
-        ChargesResource::class => ChargesPolicyPolicy::class,
-        PlanComptesResource::class => PlanComptesPolicy::class,
-        PlanCompteResource::class => PlanComptePolicy::class,
         ExecutionBudgetaireResource::class => ExecutionBudgetairePolicy::class,
         ProfilEmployeResource::class => ProfilEmployesPolicy::class,
         PlansResource::class => PlansPolicy::class,
@@ -344,6 +269,11 @@ class AuthServiceProvider extends ServiceProvider
         EmployeFormationResource::class => EmployeFormationsPolicy::class,
         NominationsEmployesResource::class => NominationsEmployesPolicy::class,
         NominationEmployeResource::class => NominationsEmployesPolicy::class,
+        AuthentifierResource::class => AuthentifierPolicy::class,
+        DeconnecterResource::class => DeconnecterPolicy::class,
+        ReinitialiserMotDePasseResource::class => ReinitialiserMotDePassePolicy::class,
+        UtilisateursResource::class => UtilisateursPolicy::class,
+        UtilisateurResource::class => UtilisateurPolicy::class,
     ];
 
     /**
@@ -355,8 +285,44 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Gate::before(function (?UtilisateurResource $user, $ability, $arguments) {
+            if (is_null($user)) {
+                return null;
+            }
+
+            $resourceClass = null;
+            if (is_array($arguments) && count($arguments) > 0) {
+                $first = $arguments[0];
+                if (is_string($first) && class_exists($first)) {
+                    $resourceClass = $first;
+                } elseif (is_object($first)) {
+                    $resourceClass = get_class($first);
+                }
+            }
+
+            $permissionLabel = $this->resolvePermissionLabel($ability, $resourceClass);
+            if ($permissionLabel && $user->hasPermission($permissionLabel)) {
+                return true;
+            }
+
+            return null;
+        });
+
         Passport::routes();
         Passport::tokensExpireIn(now()->addSeconds(3600*24));
         Passport::refreshTokensExpireIn(now()->addSeconds(3600*25));
     }
+
+    private function resolvePermissionLabel(string $ability, ?string $resourceClass): ?string
+    {
+        if (is_null($resourceClass)) {
+            return null;
+        }
+
+        $resourceName = class_basename($resourceClass);
+        $snakeResource = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $resourceName));
+
+        return $snakeResource . '.' . $ability;
+    }
 }
+

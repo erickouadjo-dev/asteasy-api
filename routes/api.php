@@ -71,49 +71,7 @@ Route::get('init-user', function(){
     ];
 });
 
-Route::get('init-DCG_FER', function(){
-    $administrateur = new Utilisateur([
-        'nom' => 'DAF_FER',
-        'email' => 'dcg_fer@domaine.com',
-        'mot_de_passe' => Hash::make('dcg_fer@t3ur'),
-        'type_utilisateur' => Utilisateur::TYPE_UTILISATEUR_DCG,
-        'groupe_utilisateur' => Utilisateur::GROUPE_UTILISATEUR_FER
-    ]);
-    $administrateur->save();
-    return [
-        'email' => 'dcg_fer@domaine.com',
-        'mot_de_passe' => 'dcg_fer@t3ur'
-    ];
-});
 
-Route::get('init-admin-Axel', function(){
-    $administrateur = new Utilisateur([
-        'nom' => 'Axel',
-        'email' => 'abeugre@moonloop.com',
-        'mot_de_passe' => Hash::make('welcome01'),
-        'type_utilisateur' => Utilisateur::TYPE_UTILISATEUR_DT,
-        'groupe_utilisateur' => Utilisateur::GROUPE_UTILISATEUR_FER
-    ]);
-    $administrateur->save();
-    return [
-        'email' => 'abeugre@moonloop.com',
-        'mot_de_passe' => 'welcome01'
-    ];
-});
-Route::get('init-admin-GVA', function(){
-    $administrateur = new Utilisateur([
-        'nom' => 'GVA',
-        'email' => 'gvanaelst@moonloop.com',
-        'mot_de_passe' => Hash::make('welcome01'),
-        'type_utilisateur' => Utilisateur::TYPE_UTILISATEUR_DT,
-        'groupe_utilisateur' => Utilisateur::GROUPE_UTILISATEUR_FER
-    ]);
-    $administrateur->save();
-    return [
-        'email' => 'gvanaelst@moonloop.com',
-        'mot_de_passe' => 'welcome01'
-    ];
-});
 
 Route::get('amd-migrate-rollback', function(){
     Artisan::call('migrate:rollback');
@@ -214,79 +172,9 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::put('/employes/{id}', 'App\Http\Controllers\Api\V1\EmployesController@update');
     Route::delete('/employes/{id}', 'App\Http\Controllers\Api\V1\EmployesController@destroy');
 
-    //types
-    Route::get('/transactions/types', 'App\Http\Controllers\Api\V1\Transactions\TypesController@index');
-
-    //importer compte bancaire
-    Route::post('/importer-comptes-bancaires', 'App\Http\Controllers\Api\V1\ImporterComptesBancairesController@store');
-
-    //plan comptable
-    Route::get('/plan-comptables', 'App\Http\Controllers\Api\V1\PlanComptablesController@index');
-    Route::get('/plan-comptables-montants', 'App\Http\Controllers\Api\V1\PlanComptablesMontantsController@index');
-    
-    //saisie opération
-    Route::get('/saisies-operations', 'App\Http\Controllers\Api\V1\SaisieOperartionsController@index');
-    Route::get('/etats-financiers', 'App\Http\Controllers\Api\V1\EtatsFinanciersController@index');
-    Route::get('/recap-executions-budgetaires', 'App\Http\Controllers\Api\V1\ExecutionsBudgetairesController@index');
-
-    //exécution budgétaire
-    Route::post('/importer-executions-budgetaires', 'App\Http\Controllers\Api\V1\ExecutionsBudgetairesController@store');
-    Route::get('/liste-budgetaires', 'App\Http\Controllers\Api\V1\ControlGestionsController@index');
-    Route::get('/bilan-execution-budgetaire', 'App\Http\Controllers\Api\V1\ControlGestionsBilanController@index');
-    Route::get('/comptes-resultats-execution-budgetaire', 'App\Http\Controllers\Api\V1\ControlGestionsCompteResultatController@index');
-    Route::put('/execution-budgetaire/{id}', 'App\Http\Controllers\Api\V1\ExecutionBudgetaires\ExecutionBudgetaireController@update');
-
-    //comptabilite
-    Route::post('/importer-journaux', 'App\Http\Controllers\Api\V1\ImporterJournauxController@store');
-    Route::get('/journaux', 'App\Http\Controllers\Api\V1\JournauxController@index');
-    Route::get('/bilan', 'App\Http\Controllers\Api\V1\BilanComptablesController@index');
-    Route::get('/comptes-resultats', 'App\Http\Controllers\Api\V1\CompteResultatsController@index');
-    Route::get('/balances-commerciales', 'App\Http\Controllers\Api\V1\BalancesCommercialesController@index');
-    Route::get('/compta-analytiques', 'App\Http\Controllers\Api\V1\ComptaAnalytiquesController@index');
-
     //notification
     Route::get('/marche-notification', 'App\Http\Controllers\Api\V1\NotificationsController@index');
 
-    //avenant
-    Route::post('/marches/{id_marche}/avenants', 'App\Http\Controllers\Api\V1\Marches\AvenantsController@store');
-    Route::get('/marches/{id_marche}/avenants', 'App\Http\Controllers\Api\V1\Marches\AvenantsController@index');
-    Route::get('/marches/{id_marche}/avenants/{id_avenant}', 'App\Http\Controllers\Api\V1\Marches\Avenant\AvenantController@show');
-    Route::put('/marches/{id_marche}/avenants/{id_avenant}', 'App\Http\Controllers\Api\V1\Marches\Avenant\AvenantController@update');
-    Route::delete('/marches/{id_marche}/avenants/{id_avenant}', 'App\Http\Controllers\Api\V1\Marches\Avenant\AvenantController@destroy');
-
-    //accords de financements
-    Route::post('/marches/{id_marche}/accords-financements', 'App\Http\Controllers\Api\V1\Marches\AccordsFinancementsController@store');
-    Route::get('/marches/{id_marche}/accords-financements', 'App\Http\Controllers\Api\V1\Marches\AccordsFinancementsController@index');
-    Route::get('/marches/{id_marche}/accords-financements/{id_af}', 'App\Http\Controllers\Api\V1\Marches\AccordFinancement\AccordFinancementController@show');
-    Route::put('/marches/{id_marche}/accords-financements/{id_af}', 'App\Http\Controllers\Api\V1\Marches\AccordFinancement\AccordFinancementController@update');
-    Route::delete('/marches/{id_marche}/accords-financements/{id_af}', 'App\Http\Controllers\Api\V1\Marches\AccordFinancement\AccordFinancementController@destroy');
-    
-    //missions de contrôle
-    Route::post('/mission-controles', 'App\Http\Controllers\Api\V1\MissionControlsController@store');
-    Route::get('/mission-controles', 'App\Http\Controllers\Api\V1\MissionControlsController@index');
-    Route::get('/mission-controles/{id}', 'App\Http\Controllers\Api\V1\MissionControls\MissionControlController@show');
-    Route::put('/mission-controles/{id}', 'App\Http\Controllers\Api\V1\MissionControls\MissionControlController@update');
-    Route::delete('/mission-controles/{id}', 'App\Http\Controllers\Api\V1\MissionControls\MissionControlController@destroy');
-
-    // Analyse Recette
-    Route::get('/recettes-peages', 'App\Http\Controllers\Api\V1\RecettePeageController@index');
-    Route::get('/recettes-peages-gare', 'App\Http\Controllers\Api\V1\RecettesPeages\RecettesPeagesController@index');
-    Route::get('/redevances-pesages', 'App\Http\Controllers\Api\V1\RedevancePesageController@index');
-    Route::get('/ressources-affectees', 'App\Http\Controllers\Api\V1\RessourcesAffecteesController@index');
-    Route::get('/recettes-levees-fonds', 'App\Http\Controllers\Api\V1\RecettesLeveesFondsController@index');
-
-    // Comptabilité Globale
-    Route::get('/comptabilite-globales', 'App\Http\Controllers\Api\V1\ComptabiliteGlobaleController@index');
-    Route::post('/comptabilite-globales', 'App\Http\Controllers\Api\V1\ComptabiliteGlobaleController@store');
-
-    // SYSCOHADA
-    Route::get('/plan-comptes', 'App\Http\Controllers\Api\V1\PlanComptesController@index');
-    Route::post('/plan-comptes', 'App\Http\Controllers\Api\V1\PlanComptesController@store');
-    Route::put('/plan-comptes/{id}', 'App\Http\Controllers\Api\V1\PlanComptes\PlancompteController@update');
-
-    //Imputation
-    Route::post('/imputations', 'App\Http\Controllers\Api\V1\Decomptes\Decompte\ImputerController@store');
-    
     //plans
     Route::get('/plans', 'App\Http\Controllers\Api\V1\PlansController@index');
     Route::post('/plans', 'App\Http\Controllers\Api\V1\PlansController@store');

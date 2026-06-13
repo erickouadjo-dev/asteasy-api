@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Permission;
+use App\Models\Utilisateur;
 
 class Role extends Model
 {
@@ -28,6 +30,16 @@ class Role extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'TB_ROLE_PERMISSION', 'ROLE_ID', 'PERMISSION_ID');
+    }
+
+    public function utilisateurs()
+    {
+        return $this->belongsToMany(Utilisateur::class, 'TB_UTILISATEUR_ROLE', 'ROLE_ID', 'UTILISATEUR_ID');
+    }
 
     public static function lister(Request $request)
     {
