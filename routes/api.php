@@ -137,6 +137,55 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::put('/bases/{id}', 'App\Http\Controllers\Api\V1\BasesController@update');
     Route::delete('/bases/{id}', 'App\Http\Controllers\Api\V1\BasesController@destroy');
 
+    //avancements
+    Route::post('/avancements', 'App\Http\Controllers\Api\V1\AvancementsController@store');
+    Route::get('/avancements', 'App\Http\Controllers\Api\V1\AvancementsController@index');
+    Route::get('/avancements/{id}', 'App\Http\Controllers\Api\V1\AvancementsController@show');
+    Route::put('/avancements/{id}', 'App\Http\Controllers\Api\V1\AvancementsController@update');
+    Route::delete('/avancements/{id}', 'App\Http\Controllers\Api\V1\AvancementsController@destroy');
+
+    //recurrences
+    Route::post('/recurrences', 'App\Http\Controllers\Api\V1\RecurrencesController@store');
+    Route::get('/recurrences', 'App\Http\Controllers\Api\V1\RecurrencesController@index');
+    Route::get('/recurrences/{id}', 'App\Http\Controllers\Api\V1\RecurrencesController@show');
+    Route::put('/recurrences/{id}', 'App\Http\Controllers\Api\V1\RecurrencesController@update');
+    Route::delete('/recurrences/{id}', 'App\Http\Controllers\Api\V1\RecurrencesController@destroy');
+
+    //statuts
+    Route::post('/statuts', 'App\Http\Controllers\Api\V1\StatutsController@store');
+    Route::get('/statuts', 'App\Http\Controllers\Api\V1\StatutsController@index');
+    Route::get('/statuts/{id}', 'App\Http\Controllers\Api\V1\StatutsController@show');
+    Route::put('/statuts/{id}', 'App\Http\Controllers\Api\V1\StatutsController@update');
+    Route::delete('/statuts/{id}', 'App\Http\Controllers\Api\V1\StatutsController@destroy');
+
+    //type-origine-actions
+    Route::post('/type-origine-actions', 'App\Http\Controllers\Api\V1\TypeOrigineActionsController@store');
+    Route::get('/type-origine-actions', 'App\Http\Controllers\Api\V1\TypeOrigineActionsController@index');
+    Route::get('/type-origine-actions/{id}', 'App\Http\Controllers\Api\V1\TypeOrigineActionsController@show');
+    Route::put('/type-origine-actions/{id}', 'App\Http\Controllers\Api\V1\TypeOrigineActionsController@update');
+    Route::delete('/type-origine-actions/{id}', 'App\Http\Controllers\Api\V1\TypeOrigineActionsController@destroy');
+
+    //gravite-risques
+    Route::post('/gravite-risques', 'App\Http\Controllers\Api\V1\GraviteRisquesController@store');
+    Route::get('/gravite-risques', 'App\Http\Controllers\Api\V1\GraviteRisquesController@index');
+    Route::get('/gravite-risques/{id}', 'App\Http\Controllers\Api\V1\GraviteRisquesController@show');
+    Route::put('/gravite-risques/{id}', 'App\Http\Controllers\Api\V1\GraviteRisquesController@update');
+    Route::delete('/gravite-risques/{id}', 'App\Http\Controllers\Api\V1\GraviteRisquesController@destroy');
+
+    //probabilite-risques
+    Route::post('/probabilite-risques', 'App\Http\Controllers\Api\V1\ProbabiliteRisquesController@store');
+    Route::get('/probabilite-risques', 'App\Http\Controllers\Api\V1\ProbabiliteRisquesController@index');
+    Route::get('/probabilite-risques/{id}', 'App\Http\Controllers\Api\V1\ProbabiliteRisquesController@show');
+    Route::put('/probabilite-risques/{id}', 'App\Http\Controllers\Api\V1\ProbabiliteRisquesController@update');
+    Route::delete('/probabilite-risques/{id}', 'App\Http\Controllers\Api\V1\ProbabiliteRisquesController@destroy');
+
+    //familles
+    Route::post('/familles', 'App\Http\Controllers\Api\V1\FamillesController@store');
+    Route::get('/familles', 'App\Http\Controllers\Api\V1\FamillesController@index');
+    Route::get('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@show');
+    Route::put('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@update');
+    Route::delete('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@destroy');
+
     //agrements
     Route::post('/agrements', 'App\Http\Controllers\Api\V1\AgrementsController@store');
     Route::get('/agrements', 'App\Http\Controllers\Api\V1\AgrementsController@index');

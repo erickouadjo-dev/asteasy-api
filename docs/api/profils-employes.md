@@ -1,4 +1,4 @@
-﻿# API Documentation - Profils Employes
+# API Documentation - Profils Employes
 
 ## Apercu
 Cette documentation couvre les endpoints CRUD de la ressource `profils-employes`.
@@ -7,6 +7,7 @@ Cette documentation couvre les endpoints CRUD de la ressource `profils-employes`
 - Prefix API: `/v1`
 - Ressource: `/profils-employes`
 - Middleware de groupe: `cors`, `multi_authentication`
+- **Isolation Multi-Tenant** : Cloisonnement automatique par entreprise. Chaque entreprise ne voit et ne gère que les profils employés de sa propre structure (`ENTREPRISE_ID`). Les super-administrateurs système ont un accès global.
 - Policy:
   - Lecture (`index`, `show`): utilisateur authentifie
   - Ecriture (`store`, `update`, `destroy`): utilisateur de type `ADMIN`

@@ -6,14 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Validator;
+use App\Traits\BelongsToTenant;
 
 class TraceActivite extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $table = 'trace_activites';
     protected $primaryKey = 'id';
     protected $guarded = ['updated_at'];
+    protected $casts = [
+        'ENTREPRISE_ID' => 'integer',
+    ];
     public $timestamps = true;
     public $incrementing = true;
 

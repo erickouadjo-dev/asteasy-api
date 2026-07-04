@@ -168,6 +168,34 @@ use App\Models\NominationEmploye as NominationEmployeResource;
 use App\Policies\NominationsEmployesPolicy;
 use App\Utility\PolicyResources\NominationsEmployes as NominationsEmployesResource;
 
+use App\Models\Avancement as AvancementResource;
+use App\Policies\AvancementsPolicy;
+use App\Utility\PolicyResources\Avancements as AvancementsResource;
+
+use App\Models\Recurrence as RecurrenceResource;
+use App\Policies\RecurrencesPolicy;
+use App\Utility\PolicyResources\Recurrences as RecurrencesResource;
+
+use App\Models\Statut as StatutResource;
+use App\Policies\StatutsPolicy;
+use App\Utility\PolicyResources\Statuts as StatutsResource;
+
+use App\Models\TypeOrigineAction as TypeOrigineActionResource;
+use App\Policies\TypeOrigineActionsPolicy;
+use App\Utility\PolicyResources\TypeOrigineActions as TypeOrigineActionsResource;
+
+use App\Models\GraviteRisque as GraviteRisqueResource;
+use App\Policies\GraviteRisquesPolicy;
+use App\Utility\PolicyResources\GraviteRisques as GraviteRisquesResource;
+
+use App\Models\ProbabiliteRisque as ProbabiliteRisqueResource;
+use App\Policies\ProbabiliteRisquesPolicy;
+use App\Utility\PolicyResources\ProbabiliteRisques as ProbabiliteRisquesResource;
+
+use App\Models\Famille as FamilleResource;
+use App\Policies\FamillesPolicy;
+use App\Utility\PolicyResources\Familles as FamillesResource;
+
 use App\Policies\SaisieOperartionsPolicy;
 use App\Utility\PolicyResources\SaisieOperartions as SaisieOperartionsResource;
 
@@ -274,6 +302,20 @@ class AuthServiceProvider extends ServiceProvider
         ReinitialiserMotDePasseResource::class => ReinitialiserMotDePassePolicy::class,
         UtilisateursResource::class => UtilisateursPolicy::class,
         UtilisateurResource::class => UtilisateurPolicy::class,
+        AvancementsResource::class => AvancementsPolicy::class,
+        AvancementResource::class => AvancementsPolicy::class,
+        RecurrencesResource::class => RecurrencesPolicy::class,
+        RecurrenceResource::class => RecurrencesPolicy::class,
+        StatutsResource::class => StatutsPolicy::class,
+        StatutResource::class => StatutsPolicy::class,
+        TypeOrigineActionsResource::class => TypeOrigineActionsPolicy::class,
+        TypeOrigineActionResource::class => TypeOrigineActionsPolicy::class,
+        GraviteRisquesResource::class => GraviteRisquesPolicy::class,
+        GraviteRisqueResource::class => GraviteRisquesPolicy::class,
+        ProbabiliteRisquesResource::class => ProbabiliteRisquesPolicy::class,
+        ProbabiliteRisqueResource::class => ProbabiliteRisquesPolicy::class,
+        FamillesResource::class => FamillesPolicy::class,
+        FamilleResource::class => FamillesPolicy::class,
     ];
 
     /**

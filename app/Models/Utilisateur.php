@@ -13,6 +13,7 @@ use Config;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
 use App\Models\Permission;
+use App\Traits\BelongsToTenant;
 /*use Illuminate\Support\Facades\Mail;
 use App\Mail\CreationUtilisateurMail;
 use App\Mail\ReinitialiserMotDePasseMail;*/
@@ -20,7 +21,7 @@ use App\Mail\ReinitialiserMotDePasseMail;*/
 
 class Utilisateur extends Authenticatable
 {
-    use HasFactory, HasApiTokens, Notifiable, SoftDeletes;
+    use HasFactory, HasApiTokens, Notifiable, SoftDeletes, BelongsToTenant;
 
     protected $table = 'utilisateurs';
     protected $primaryKey = 'id';
@@ -37,9 +38,11 @@ class Utilisateur extends Authenticatable
         'etat',
         'type_utilisateur',
         'USER_TYPE_ID',
+        'ENTREPRISE_ID',
     ];
     protected $casts = [
         'USER_TYPE_ID' => 'integer',
+        'ENTREPRISE_ID' => 'integer',
     ];
     protected $dates = ['deleted_at'];
     public $timestamps = true;

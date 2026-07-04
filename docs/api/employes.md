@@ -1,4 +1,4 @@
-﻿# API Documentation - Employes
+# API Documentation - Employes
 
 ## Apercu
 
@@ -6,6 +6,7 @@
 - Prefix API: `/v1`
 - Ressource: `/employes`
 - Middleware de groupe: `cors`, `multi_authentication`
+- **Isolation Multi-Tenant** : Cloisonnement automatique par entreprise. Chaque entreprise ne voit et ne gère que les employés de sa propre structure (`ENTREPRISE_ID`). Les super-administrateurs système ont un accès global.
 - Policy:
   - Lecture (`index`, `show`): utilisateur authentifie
   - Ecriture (`store`, `update`, `destroy`): utilisateur de type `ADMIN` ou `POWER_USER`

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class ProfilEmploye extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_PROFIL_EMPLOYE';
     protected $primaryKey = 'ID';
@@ -22,7 +23,13 @@ class ProfilEmploye extends Model
     protected $fillable = [
         'INTITULE',
         'DESCRIPTION',
-        'MODIFICATION'
+        'MODIFICATION',
+        'ENTREPRISE_ID'
+    ];
+
+    protected $casts = [
+        'ENTREPRISE_ID' => 'integer',
+        'MODIFICATION' => 'integer'
     ];
 
     protected $dates = ['deleted_at'];

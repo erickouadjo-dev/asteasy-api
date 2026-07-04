@@ -1,4 +1,4 @@
-﻿# API Documentation - Utilisateurs
+# API Documentation - Utilisateurs
 
 ## Apercu
 Cette documentation couvre les endpoints exposes sous la ressource `utilisateurs`.
@@ -8,6 +8,7 @@ Cette documentation couvre les endpoints exposes sous la ressource `utilisateurs
 - Ressource principale: `/utilisateurs`
 - Middleware de groupe principal: `cors`, `multi_authentication`
 - Exception: `POST /v1/utilisateurs/{id}/finaliser-mot-de-passe` est expose sous `cors` uniquement (sans session active)
+- **Isolation Multi-Tenant** : Cloisonnement automatique par entreprise. Chaque utilisateur ne voit et ne gère que les utilisateurs appartenant à la même entreprise (`ENTREPRISE_ID`). Les super-administrateurs système (sans entreprise associée) ont un accès global.
 
 ## Endpoints couverts
 
@@ -35,6 +36,7 @@ Cette documentation couvre les endpoints exposes sous la ressource `utilisateurs
   "etat": "actif",
   "type_utilisateur": "POWER_USER",
   "USER_TYPE_ID": 1,
+  "ENTREPRISE_ID": 3,
   "created_at": "2026-05-07T10:15:30.000000Z",
   "updated_at": "2026-05-07T10:15:30.000000Z",
   "deleted_at": null

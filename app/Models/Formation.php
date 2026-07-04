@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class Formation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_FORMATION';
     protected $primaryKey = 'ID';
@@ -27,10 +28,12 @@ class Formation extends Model
         'FICHIERS_IMAGES',
         'MODIFICATION',
         'IS_DELETE',
+        'ENTREPRISE_ID',
     ];
 
     protected $casts = [
         'IS_DELETE' => 'boolean',
+        'ENTREPRISE_ID' => 'integer',
     ];
 
     protected $dates = ['deleted_at'];

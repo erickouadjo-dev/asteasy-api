@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class NominationEmploye extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_NOMINATION_EMPLOYE';
     protected $primaryKey = 'ID';
@@ -28,6 +29,7 @@ class NominationEmploye extends Model
         'DATE_PRISE_DE_FONCTION',
         'DATE_FIN',
         'IS_DELETE',
+        'ENTREPRISE_ID',
     ];
 
     protected $casts = [
@@ -36,6 +38,7 @@ class NominationEmploye extends Model
         'DATE_PRISE_DE_FONCTION' => 'datetime',
         'DATE_FIN' => 'datetime',
         'IS_DELETE' => 'boolean',
+        'ENTREPRISE_ID' => 'integer',
     ];
 
     protected $dates = ['deleted_at'];

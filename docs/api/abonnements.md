@@ -1,4 +1,4 @@
-﻿# API Documentation - Abonnements
+# API Documentation - Abonnements
 
 ## Apercu
 https://asteasy.deepinovia.com/api/api
@@ -6,6 +6,7 @@ https://asteasy.deepinovia.com/api/api
 - Prefix API: `/v1`
 - Ressource: `/abonnements`
 - Middleware de groupe: `cors`, `multi_authentication`
+- **Isolation Multi-Tenant** : Cloisonnement automatique par entreprise. Chaque entreprise ne voit et ne gère que les abonnements de sa propre structure (`ENTREPRISE_ID`). Les super-administrateurs système ont un accès global.
 - Policy:
   - Lecture (`index`, `show`): utilisateur authentifie
   - Ecriture (`store`, `update`, `destroy`): utilisateur de type `ADMIN`
