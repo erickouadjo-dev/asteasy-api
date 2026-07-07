@@ -273,6 +273,13 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::put('/roles-permissions/{id}', 'App\Http\Controllers\Api\V1\RolesPermissionsController@update');
     Route::delete('/roles-permissions/{id}', 'App\Http\Controllers\Api\V1\RolesPermissionsController@destroy');
 
+    //utilisateurs roles
+    Route::get('/utilisateurs-roles', 'App\Http\Controllers\Api\V1\UtilisateursRolesController@index');
+    Route::post('/utilisateurs-roles', 'App\Http\Controllers\Api\V1\UtilisateursRolesController@store');
+    Route::get('/utilisateurs-roles/{id}', 'App\Http\Controllers\Api\V1\UtilisateursRolesController@show');
+    Route::put('/utilisateurs-roles/{id}', 'App\Http\Controllers\Api\V1\UtilisateursRolesController@update');
+    Route::delete('/utilisateurs-roles/{id}', 'App\Http\Controllers\Api\V1\UtilisateursRolesController@destroy');
+
     //abonnements
     Route::get('/abonnements', 'App\Http\Controllers\Api\V1\AbonnementsController@index');
     Route::post('/abonnements', 'App\Http\Controllers\Api\V1\AbonnementsController@store');

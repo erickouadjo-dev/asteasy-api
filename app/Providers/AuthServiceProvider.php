@@ -196,6 +196,11 @@ use App\Models\Famille as FamilleResource;
 use App\Policies\FamillesPolicy;
 use App\Utility\PolicyResources\Familles as FamillesResource;
 
+use App\Models\UtilisateurRole as UtilisateurRoleResource;
+use App\Policies\UtilisateursRolesPolicy;
+use App\Utility\PolicyResources\UtilisateursRoles as UtilisateursRolesResource;
+
+
 use App\Policies\SaisieOperartionsPolicy;
 use App\Utility\PolicyResources\SaisieOperartions as SaisieOperartionsResource;
 
@@ -316,6 +321,8 @@ class AuthServiceProvider extends ServiceProvider
         ProbabiliteRisqueResource::class => ProbabiliteRisquesPolicy::class,
         FamillesResource::class => FamillesPolicy::class,
         FamilleResource::class => FamillesPolicy::class,
+        UtilisateursRolesResource::class => UtilisateursRolesPolicy::class,
+        UtilisateurRoleResource::class => UtilisateursRolesPolicy::class,
     ];
 
     /**
