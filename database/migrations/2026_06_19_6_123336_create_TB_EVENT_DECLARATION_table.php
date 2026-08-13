@@ -26,18 +26,18 @@ return new class extends Migration
             $table->unsignedBigInteger('RAPORTEUR')->nullable();
             $table->foreign('RAPORTEUR')->references('id')->on('utilisateurs')->nullable();
 
-            $table->string('BASE_OPERATEUR');
+            $table->string('BASE_OPERATEUR')->nullable();
             $table->date('DATE_EVENT')->comment('date du jour par defaut en automatique. modifiable');
             $table->time('HEURE_EVENT');
-            $table->string('CLIENT_MISSION')->comment('Nom du client ou de la mission');
+            $table->string('CLIENT_MISSION')->comment('Nom du client ou de la mission')->nullable();
             
             $table->unsignedBigInteger('ID_BASE_MATERIEL')->nullable()->comment('Aeronef Véhicule Equipement impliqué dans évènement');
             $table->foreign('ID_BASE_MATERIEL')->references('ID')->on('TB_BASE_MATERIEL')->nullable();
 
             $table->string('EVENT_LOCALISATION')->comment('Localisation - Lieu');
-            $table->string('GPS_POSITION')->comment('Position GPS');
+            $table->string('GPS_POSITION')->comment('Position GPS')->nullable();
             $table->string('EVENT_DESCRIPTION');
-            $table->longText('FICHIERS_IMAGES');
+            $table->longText('FICHIERS_IMAGES')->nullable();
         });
 
         Schema::enableForeignKeyConstraints();

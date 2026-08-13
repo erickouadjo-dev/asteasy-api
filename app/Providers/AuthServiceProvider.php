@@ -196,9 +196,53 @@ use App\Models\Famille as FamilleResource;
 use App\Policies\FamillesPolicy;
 use App\Utility\PolicyResources\Familles as FamillesResource;
 
+use App\Models\RiskCategory as RiskCategoryResource;
+use App\Policies\RiskCategoriesPolicy;
+use App\Utility\PolicyResources\RiskCategories as RiskCategoriesResource;
+
+use App\Models\RiskSubcategory as RiskSubcategoryResource;
+use App\Policies\RiskSubcategoriesPolicy;
+use App\Utility\PolicyResources\RiskSubcategories as RiskSubcategoriesResource;
+
+use App\Models\MesureControle as MesureControleResource;
+use App\Policies\MesuresControlesPolicy;
+use App\Utility\PolicyResources\MesuresControles as MesuresControlesResource;
+
+use App\Models\MesureAdditionnelle as MesureAdditionnelleResource;
+use App\Policies\MesuresAdditionnellesPolicy;
+use App\Utility\PolicyResources\MesuresAdditionnelles as MesuresAdditionnellesResource;
+
+use App\Models\Risque as RisqueResource;
+use App\Policies\RisquesPolicy;
+use App\Utility\PolicyResources\Risques as RisquesResource;
+
 use App\Models\UtilisateurRole as UtilisateurRoleResource;
 use App\Policies\UtilisateursRolesPolicy;
 use App\Utility\PolicyResources\UtilisateursRoles as UtilisateursRolesResource;
+
+use App\Models\TasksSafety as TasksSafetyResource;
+use App\Policies\TasksSafetyPolicy;
+use App\Utility\PolicyResources\TasksSafety as TasksSafetyResourceHelper;
+
+use App\Models\SafetyAction as SafetyActionResource;
+use App\Policies\SafetyActionsPolicy;
+use App\Utility\PolicyResources\SafetyActions as SafetyActionsResourceHelper;
+
+use App\Models\EventAnalyse as EventAnalyseResource;
+use App\Policies\EventAnalysesPolicy;
+use App\Utility\PolicyResources\EventAnalyses as EventAnalysesResourceHelper;
+
+use App\Models\EventDeclaration as EventDeclarationResource;
+use App\Policies\EventDeclarationsPolicy;
+use App\Utility\PolicyResources\EventDeclarations as EventDeclarationsResourceHelper;
+
+use App\Models\MatriceRisque as MatriceRisqueResource;
+use App\Policies\MatriceRisquesPolicy;
+use App\Utility\PolicyResources\MatriceRisques as MatriceRisquesResourceHelper;
+
+use App\Models\TargEtiquette as TargEtiquetteResource;
+use App\Policies\TargEtiquettesPolicy;
+use App\Utility\PolicyResources\TargEtiquettes as TargEtiquettesResourceHelper;
 
 
 use App\Policies\SaisieOperartionsPolicy;
@@ -321,8 +365,30 @@ class AuthServiceProvider extends ServiceProvider
         ProbabiliteRisqueResource::class => ProbabiliteRisquesPolicy::class,
         FamillesResource::class => FamillesPolicy::class,
         FamilleResource::class => FamillesPolicy::class,
+        RiskCategoriesResource::class => RiskCategoriesPolicy::class,
+        RiskCategoryResource::class => RiskCategoriesPolicy::class,
+        RiskSubcategoriesResource::class => RiskSubcategoriesPolicy::class,
+        RiskSubcategoryResource::class => RiskSubcategoriesPolicy::class,
+        MesuresControlesResource::class => MesuresControlesPolicy::class,
+        MesureControleResource::class => MesuresControlesPolicy::class,
+        MesuresAdditionnellesResource::class => MesuresAdditionnellesPolicy::class,
+        MesureAdditionnelleResource::class => MesuresAdditionnellesPolicy::class,
+        RisquesResource::class => RisquesPolicy::class,
+        RisqueResource::class => RisquesPolicy::class,
         UtilisateursRolesResource::class => UtilisateursRolesPolicy::class,
         UtilisateurRoleResource::class => UtilisateursRolesPolicy::class,
+        TasksSafetyResourceHelper::class => TasksSafetyPolicy::class,
+        TasksSafetyResource::class => TasksSafetyPolicy::class,
+        SafetyActionsResourceHelper::class => SafetyActionsPolicy::class,
+        SafetyActionResource::class => SafetyActionsPolicy::class,
+        EventAnalysesResourceHelper::class => EventAnalysesPolicy::class,
+        EventAnalyseResource::class => EventAnalysesPolicy::class,
+        EventDeclarationsResourceHelper::class => EventDeclarationsPolicy::class,
+        EventDeclarationResource::class => EventDeclarationsPolicy::class,
+        MatriceRisquesResourceHelper::class => MatriceRisquesPolicy::class,
+        MatriceRisqueResource::class => MatriceRisquesPolicy::class,
+        TargEtiquettesResourceHelper::class => TargEtiquettesPolicy::class,
+        TargEtiquetteResource::class => TargEtiquettesPolicy::class,
     ];
 
     /**

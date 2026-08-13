@@ -41,7 +41,7 @@ return new class extends Migration
             $table->unsignedBigInteger('ID_AVANCEMENT')->nullable(); 
             $table->foreign('ID_AVANCEMENT')->references('ID')->on('TB_AVANCEMENT')->nullable();
 
-            $table->date('DATE_CLOTURE');
+            $table->date('DATE_CLOTURE')->nullable();
             
             $table->unsignedBigInteger('RESPONSABLE')->nullable();
             $table->foreign('RESPONSABLE')->references('id')->on('utilisateurs')->nullable();

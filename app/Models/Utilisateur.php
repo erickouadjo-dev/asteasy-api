@@ -882,6 +882,7 @@ class Utilisateur extends Authenticatable
             'nom' => 'string|max:100',
             'email' => 'string|max:100',
             'type' => 'string|max:50',
+            'ENTREPRISE_ID' => 'integer|nullable',
         ];
 
         $validator = Validator::make($inputs, $rules);
@@ -905,6 +906,9 @@ class Utilisateur extends Authenticatable
             }
             if (array_key_exists('type_utilisateur', $inputs)) {
                 $this->type_utilisateur = $inputs['type_utilisateur'];
+            }
+            if (array_key_exists('ENTREPRISE_ID', $inputs)) {
+                $this->ENTREPRISE_ID = $inputs['ENTREPRISE_ID'];
             }
             $this->save();
 

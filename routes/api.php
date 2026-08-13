@@ -18,8 +18,11 @@ use App\Http\Controllers\Api\V1\MarcheNotificationController;
 */
 
 Route::get('amd-clear-cache', function(){
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('cache:clear');
     Artisan::call('config:cache');
-    return "cache cleared";
+    return "all caches cleared";
 });
 
 Route::get('amd-migrate', function(){
@@ -70,7 +73,6 @@ Route::get('init-user', function(){
         'mot_de_passe' => 'us3rP@ssw0rd'
     ];
 });
-
 
 
 Route::get('amd-migrate-rollback', function(){
@@ -144,6 +146,48 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::put('/avancements/{id}', 'App\Http\Controllers\Api\V1\AvancementsController@update');
     Route::delete('/avancements/{id}', 'App\Http\Controllers\Api\V1\AvancementsController@destroy');
 
+    //tasks-safety
+    Route::post('/tasks-safety', 'App\Http\Controllers\Api\V1\TasksSafetyController@store');
+    Route::get('/tasks-safety', 'App\Http\Controllers\Api\V1\TasksSafetyController@index');
+    Route::get('/tasks-safety/{id}', 'App\Http\Controllers\Api\V1\TasksSafetyController@show');
+    Route::put('/tasks-safety/{id}', 'App\Http\Controllers\Api\V1\TasksSafetyController@update');
+    Route::delete('/tasks-safety/{id}', 'App\Http\Controllers\Api\V1\TasksSafetyController@destroy');
+
+    //safety-actions
+    Route::post('/safety-actions', 'App\Http\Controllers\Api\V1\SafetyActionsController@store');
+    Route::get('/safety-actions', 'App\Http\Controllers\Api\V1\SafetyActionsController@index');
+    Route::get('/safety-actions/{id}', 'App\Http\Controllers\Api\V1\SafetyActionsController@show');
+    Route::put('/safety-actions/{id}', 'App\Http\Controllers\Api\V1\SafetyActionsController@update');
+    Route::delete('/safety-actions/{id}', 'App\Http\Controllers\Api\V1\SafetyActionsController@destroy');
+
+    //event-analyses
+    Route::post('/event-analyses', 'App\Http\Controllers\Api\V1\EventAnalysesController@store');
+    Route::get('/event-analyses', 'App\Http\Controllers\Api\V1\EventAnalysesController@index');
+    Route::get('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@show');
+    Route::put('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@update');
+    Route::delete('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@destroy');
+
+    //event-declarations
+    Route::post('/event-declarations', 'App\Http\Controllers\Api\V1\EventDeclarationsController@store');
+    Route::get('/event-declarations', 'App\Http\Controllers\Api\V1\EventDeclarationsController@index');
+    Route::get('/event-declarations/{id}', 'App\Http\Controllers\Api\V1\EventDeclarationsController@show');
+    Route::put('/event-declarations/{id}', 'App\Http\Controllers\Api\V1\EventDeclarationsController@update');
+    Route::delete('/event-declarations/{id}', 'App\Http\Controllers\Api\V1\EventDeclarationsController@destroy');
+
+    //matrice-risques
+    Route::post('/matrice-risques', 'App\Http\Controllers\Api\V1\MatriceRisquesController@store');
+    Route::get('/matrice-risques', 'App\Http\Controllers\Api\V1\MatriceRisquesController@index');
+    Route::get('/matrice-risques/{id}', 'App\Http\Controllers\Api\V1\MatriceRisquesController@show');
+    Route::put('/matrice-risques/{id}', 'App\Http\Controllers\Api\V1\MatriceRisquesController@update');
+    Route::delete('/matrice-risques/{id}', 'App\Http\Controllers\Api\V1\MatriceRisquesController@destroy');
+
+    //targ-etiquettes
+    Route::post('/targ-etiquettes', 'App\Http\Controllers\Api\V1\TargEtiquettesController@store');
+    Route::get('/targ-etiquettes', 'App\Http\Controllers\Api\V1\TargEtiquettesController@index');
+    Route::get('/targ-etiquettes/{id}', 'App\Http\Controllers\Api\V1\TargEtiquettesController@show');
+    Route::put('/targ-etiquettes/{id}', 'App\Http\Controllers\Api\V1\TargEtiquettesController@update');
+    Route::delete('/targ-etiquettes/{id}', 'App\Http\Controllers\Api\V1\TargEtiquettesController@destroy');
+
     //recurrences
     Route::post('/recurrences', 'App\Http\Controllers\Api\V1\RecurrencesController@store');
     Route::get('/recurrences', 'App\Http\Controllers\Api\V1\RecurrencesController@index');
@@ -185,6 +229,41 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::get('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@show');
     Route::put('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@update');
     Route::delete('/familles/{id}', 'App\Http\Controllers\Api\V1\FamillesController@destroy');
+
+    //risk-categories
+    Route::post('/risk-categories', 'App\Http\Controllers\Api\V1\RiskCategoriesController@store');
+    Route::get('/risk-categories', 'App\Http\Controllers\Api\V1\RiskCategoriesController@index');
+    Route::get('/risk-categories/{id}', 'App\Http\Controllers\Api\V1\RiskCategoriesController@show');
+    Route::put('/risk-categories/{id}', 'App\Http\Controllers\Api\V1\RiskCategoriesController@update');
+    Route::delete('/risk-categories/{id}', 'App\Http\Controllers\Api\V1\RiskCategoriesController@destroy');
+
+    //risk-subcategories
+    Route::post('/risk-subcategories', 'App\Http\Controllers\Api\V1\RiskSubcategoriesController@store');
+    Route::get('/risk-subcategories', 'App\Http\Controllers\Api\V1\RiskSubcategoriesController@index');
+    Route::get('/risk-subcategories/{id}', 'App\Http\Controllers\Api\V1\RiskSubcategoriesController@show');
+    Route::put('/risk-subcategories/{id}', 'App\Http\Controllers\Api\V1\RiskSubcategoriesController@update');
+    Route::delete('/risk-subcategories/{id}', 'App\Http\Controllers\Api\V1\RiskSubcategoriesController@destroy');
+
+    //mesures-controle
+    Route::post('/mesures-controle', 'App\Http\Controllers\Api\V1\MesuresControlesController@store');
+    Route::get('/mesures-controle', 'App\Http\Controllers\Api\V1\MesuresControlesController@index');
+    Route::get('/mesures-controle/{id}', 'App\Http\Controllers\Api\V1\MesuresControlesController@show');
+    Route::put('/mesures-controle/{id}', 'App\Http\Controllers\Api\V1\MesuresControlesController@update');
+    Route::delete('/mesures-controle/{id}', 'App\Http\Controllers\Api\V1\MesuresControlesController@destroy');
+
+    //mesures-additionnelles
+    Route::post('/mesures-additionnelles', 'App\Http\Controllers\Api\V1\MesuresAdditionnellesController@store');
+    Route::get('/mesures-additionnelles', 'App\Http\Controllers\Api\V1\MesuresAdditionnellesController@index');
+    Route::get('/mesures-additionnelles/{id}', 'App\Http\Controllers\Api\V1\MesuresAdditionnellesController@show');
+    Route::put('/mesures-additionnelles/{id}', 'App\Http\Controllers\Api\V1\MesuresAdditionnellesController@update');
+    Route::delete('/mesures-additionnelles/{id}', 'App\Http\Controllers\Api\V1\MesuresAdditionnellesController@destroy');
+
+    //risques
+    Route::post('/risques', 'App\Http\Controllers\Api\V1\RisquesController@store');
+    Route::get('/risques', 'App\Http\Controllers\Api\V1\RisquesController@index');
+    Route::get('/risques/{id}', 'App\Http\Controllers\Api\V1\RisquesController@show');
+    Route::put('/risques/{id}', 'App\Http\Controllers\Api\V1\RisquesController@update');
+    Route::delete('/risques/{id}', 'App\Http\Controllers\Api\V1\RisquesController@destroy');
 
     //agrements
     Route::post('/agrements', 'App\Http\Controllers\Api\V1\AgrementsController@store');

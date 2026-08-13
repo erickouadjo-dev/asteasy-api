@@ -30,8 +30,8 @@ return new class extends Migration
             $table->longText('EVENT_DESCRIPTION_ANALYSE')->comment('Duplication EVENT_DESCRIPTION mais modifiable');
             $table->bigInteger('EVENT_LOCATION_ANALYSE')->comment('Duplication EVENT_LOCATION mais modifiable');
             $table->enum('EVENT_TYPE', ['ACCIDENT', 'INCIDENT MAJEUR', 'INCIDENT MINEUR', 'DANGER'])->comment('Liste de valeur (4) : ACCIDENT, INCIDENT MAJEUR, INCIDENT MINEUR, DANGER');
-            $table->text('ROOTCAUSE');
-            $table->text('FACTEURS_CONTRIBUTIFS');
+            $table->text('ROOTCAUSE')->nullable();
+            $table->text('FACTEURS_CONTRIBUTIFS')->nullable();
 
             $table->unsignedBigInteger('ID_RISQUE')->nullable();
             $table->foreign('ID_RISQUE')->references('id')->on('RISQUES');
@@ -42,31 +42,31 @@ return new class extends Migration
             $table->unsignedBigInteger('ID_SAFETY_ACTION')->nullable();
             $table->foreign('ID_SAFETY_ACTION')->references('ID')->on('TB_SAFETY_ACTION');
             
-            $table->text('RISKLEVEL_FINAL_ACCEPTANCE')->comment('Validation Responsable ou DR');
+            $table->text('RISKLEVEL_FINAL_ACCEPTANCE')->comment('Validation Responsable ou DR')->nullable();
 
             $table->unsignedBigInteger('ANALYSE_PAR')->nullable();
             $table->foreign('ANALYSE_PAR')->references('id')->on('utilisateurs')->nullable();
             
-            $table->enum('INFO_AUTORITE', ["OUI","NON"]);
+            $table->enum('INFO_AUTORITE', ["OUI","NON"])->default('NON');
             $table->date('DATE_INFO_AUTORITE')->nullable();
             
-            $table->enum('INFO_CLIENT', ["OUI","NON"]);
+            $table->enum('INFO_CLIENT', ["OUI","NON"])->default('NON');
             $table->date('DATE_INFO_CLIENT')->nullable();
             
-            $table->text('COMMENTAIRE');
+            $table->text('COMMENTAIRE')->nullable();
             
-            $table->enum('RISQUE_SUBSIDIAIRE', ["OUI","NON"]);
+            $table->enum('RISQUE_SUBSIDIAIRE', ["OUI","NON"])->default('NON');
             
             $table->unsignedBigInteger('ID_STATUT')->nullable(); 
             $table->foreign('ID_STATUT')->references('ID')->on('TB_STATUT')->nullable();
             
-            $table->enum('PUBLIE', ["OUI","NON"]);
+            $table->enum('PUBLIE', ["OUI","NON"])->default('NON');
             $table->date('DATE_PUBLIE')->nullable();
 
             $table->unsignedBigInteger('ID_TAG_ETIQUETTE')->nullable(); 
             $table->foreign('ID_TAG_ETIQUETTE')->references('ID')->on('TB_TAG_ETIQUETTE')->nullable();
             
-            $table->date('DATE_CLOTURE');
+            $table->date('DATE_CLOTURE')->nullable();
         });
 
         Schema::enableForeignKeyConstraints();

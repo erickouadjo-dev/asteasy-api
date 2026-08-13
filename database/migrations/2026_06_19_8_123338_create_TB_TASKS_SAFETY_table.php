@@ -41,14 +41,14 @@ return new class extends Migration
             $table->foreign('ID_AVANCEMENT')->references('ID')->on('TB_AVANCEMENT')->nullable();
             
             $table->date('DATE_BUTEE')->comment('Date limite de cloture');
-            $table->date('DATE_FERMETURE');
-            $table->date('RAPPEL_DATE_BUTEE')->comment('1 j avant .3j 7 j etc etc');
+            $table->date('DATE_FERMETURE')->nullable();
+            $table->date('RAPPEL_DATE_BUTEE')->comment('1 j avant .3j 7 j etc etc')->nullable();
 
             $table->unsignedBigInteger('RESPONSABLE_PROPRIETAIRE')->nullable();
             $table->foreign('RESPONSABLE_PROPRIETAIRE')->references('id')->on('utilisateurs')->nullable();
 
-            $table->longText('COMMENTAIRES_OBSERVATIONS');
-            $table->longText('FICHIERS_IMAGES');
+            $table->longText('COMMENTAIRES_OBSERVATIONS')->nullable();
+            $table->longText('FICHIERS_IMAGES')->nullable();
 
             $table->unsignedBigInteger('ID_TAG_ETIQUETTE')->nullable(); 
             $table->foreign('ID_TAG_ETIQUETTE')->references('ID')->on('TB_TAG_ETIQUETTE')->nullable();
