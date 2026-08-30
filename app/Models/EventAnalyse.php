@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class EventAnalyse extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_EVENT_ANALYSE';
     protected $primaryKey = 'ID';
@@ -44,6 +45,7 @@ class EventAnalyse extends Model
         'DATE_PUBLIE',
         'ID_TAG_ETIQUETTE',
         'DATE_CLOTURE',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
@@ -57,10 +59,16 @@ class EventAnalyse extends Model
         'ANALYSE_PAR' => 'integer',
         'ID_STATUT' => 'integer',
         'ID_TAG_ETIQUETTE' => 'integer',
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at', 'DATE_ANALYSE', 'DATE_INFO_AUTORITE', 'DATE_INFO_CLIENT', 'DATE_PUBLIE', 'DATE_CLOTURE'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function eventDeclaration()
     {
@@ -95,7 +103,8 @@ class EventAnalyse extends Model
             $search   = $request->input('search', '');
 
             $query = self::where('IS_DELETE', false)
-                ->whereNull('deleted_at');
+                ->whereNull('deleted_at')
+                ->with(['eventDeclaration', 'safetyAction', 'analyste', 'statut']);
 
             if (!empty($search)) {
                 $query->where(function($q) use ($search) {
@@ -168,6 +177,7 @@ class EventAnalyse extends Model
                 'DATE_PUBLIE'                => 'nullable|date',
                 'ID_TAG_ETIQUETTE'           => 'nullable|integer',
                 'DATE_CLOTURE'               => 'nullable|date',
+                'ENTREPRISE_ID'              => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -279,6 +289,7 @@ class EventAnalyse extends Model
                 'DATE_PUBLIE'                => 'nullable|date',
                 'ID_TAG_ETIQUETTE'           => 'nullable|integer',
                 'DATE_CLOTURE'               => 'nullable|date',
+                'ENTREPRISE_ID'              => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

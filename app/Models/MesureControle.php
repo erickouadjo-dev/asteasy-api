@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+use App\Traits\BelongsToTenant;
+
 class MesureControle extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_MESURES_CONTROLE';
     protected $primaryKey = 'ID';
@@ -26,14 +28,21 @@ class MesureControle extends Model
         'COMMENTAIRES',
         'ID_TAG_ETIQUETTE',
         'DEPARTEMENT_RESPONSABLE',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
     protected $casts = [
-        'IS_DELETE' => 'boolean',
+        'ENTREPRISE_ID' => 'integer',
+        'IS_DELETE'     => 'boolean',
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function tag()
     {
@@ -112,6 +121,7 @@ class MesureControle extends Model
                 'COMMENTAIRES'            => 'required|string',
                 'ID_TAG_ETIQUETTE'        => 'nullable|integer|exists:TB_TARG_ETIQUETTE,ID',
                 'DEPARTEMENT_RESPONSABLE' => 'nullable|integer|exists:utilisateurs,id',
+                'ENTREPRISE_ID'           => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -207,6 +217,7 @@ class MesureControle extends Model
                 'COMMENTAIRES'            => 'nullable|string',
                 'ID_TAG_ETIQUETTE'        => 'nullable|integer|exists:TB_TARG_ETIQUETTE,ID',
                 'DEPARTEMENT_RESPONSABLE' => 'nullable|integer|exists:utilisateurs,id',
+                'ENTREPRISE_ID'           => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

@@ -6,7 +6,7 @@
 - Préfixe API : `/v1`
 - Ressource : `/type-origine-actions`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_TYPE_ORIGINE_ACTION` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_TYPE_ORIGINE_ACTION` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -18,8 +18,9 @@
   "ID": 1,
   "INTITULE": "Audit interne",
   "DESCRIPTION": "Action initiée suite à un audit interne.",
-  "IS_DELETE": false,
   "CREATED_BY": 2,
+  "ENTREPRISE_ID": 1,
+  "IS_DELETE": false,
   "created_at": "2026-06-28T22:00:00.000000Z",
   "updated_at": "2026-06-28T22:00:00.000000Z",
   "deleted_at": null
@@ -54,8 +55,9 @@ Réponse 200 :
       "ID": 1,
       "INTITULE": "Audit interne",
       "DESCRIPTION": "Action initiée suite à un audit interne.",
-      "IS_DELETE": false,
       "CREATED_BY": 2,
+      "ENTREPRISE_ID": 1,
+      "IS_DELETE": false,
       "created_at": "2026-06-28T22:00:00.000000Z",
       "updated_at": "2026-06-28T22:00:00.000000Z",
       "deleted_at": null
@@ -83,6 +85,7 @@ Réponse 200 :
 Body JSON :
 - `INTITULE` (requis, string, max 255, unique dans `TB_TYPE_ORIGINE_ACTION`)
 - `DESCRIPTION` (requis, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -104,8 +107,9 @@ Réponse 201 (le champ `CREATED_BY` est automatiquement assigné avec l'ID de l'
     "ID": 2,
     "INTITULE": "Inspection",
     "DESCRIPTION": "Action initiée après une inspection de sécurité.",
-    "IS_DELETE": false,
     "CREATED_BY": 2,
+    "ENTREPRISE_ID": 1,
+    "IS_DELETE": false,
     "created_at": "2026-06-28T22:10:00.000000Z",
     "updated_at": "2026-06-28T22:10:00.000000Z",
     "deleted_at": null
@@ -135,8 +139,9 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Inspection",
     "DESCRIPTION": "Action initiée après une inspection de sécurité.",
-    "IS_DELETE": false,
     "CREATED_BY": 2,
+    "ENTREPRISE_ID": 1,
+    "IS_DELETE": false,
     "created_at": "2026-06-28T22:10:00.000000Z",
     "updated_at": "2026-06-28T22:10:00.000000Z",
     "deleted_at": null
@@ -156,6 +161,7 @@ Body JSON :
 - tous les champs sont optionnels
 - `INTITULE` (optionnel, string, max 255, unique dans `TB_TYPE_ORIGINE_ACTION` sauf pour cet ID)
 - `DESCRIPTION` (optionnel, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -176,8 +182,9 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Inspection",
     "DESCRIPTION": "Mise à jour de la description.",
-    "IS_DELETE": false,
     "CREATED_BY": 2,
+    "ENTREPRISE_ID": 1,
+    "IS_DELETE": false,
     "created_at": "2026-06-28T22:10:00.000000Z",
     "updated_at": "2026-06-28T22:20:00.000000Z",
     "deleted_at": null
@@ -211,8 +218,9 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Inspection",
     "DESCRIPTION": "Mise à jour de la description.",
-    "IS_DELETE": true,
     "CREATED_BY": 2,
+    "ENTREPRISE_ID": 1,
+    "IS_DELETE": true,
     "created_at": "2026-06-28T22:10:00.000000Z",
     "updated_at": "2026-06-28T22:20:00.000000Z",
     "deleted_at": "2026-06-28T22:30:00.000000Z"

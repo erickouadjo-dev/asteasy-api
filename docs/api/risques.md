@@ -2,11 +2,11 @@
 
 ## Aperçu
 
-- Racine endpoints : `https://asteasy.deepinovia.com/api/api`
+- Racine endpoints : `https://asteasy.deepinovia.com/api/api` *(ou `http://asteasy-api.test/api` en local)*
 - Préfixe API : `/v1`
 - Ressource : `/risques`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_RISQUES` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_RISQUES` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -16,59 +16,50 @@
 ```json
 {
   "ID": 1,
-  "REFERENCE_RISK": "RISK-001",
-  "INTITULE_RISK": "Chute de hauteur lors du montage de l'échafaudage",
-  "ID_RISK_CATEGORY": 1,
+  "REFERENCE_RISK": "RSK-2026-001",
+  "INTITULE_RISK": "Ingestion de corps étranger (FOD) lors du décollage",
+  "ID_RISK_CATEGORY": 3,
   "ID_RISK_SUBCATEGORY": 1,
-  "CONSEQUENSE_ULTIME": "Fractures graves ou décès",
-  "ID_MESURES_CONTROLE": 1,
-  "FREQUENCE_RISK_INITIAL": "Mensuelle",
+  "CONSEQUENSE_ULTIME": "Endommagement compresseur réacteur et interruption de décollage (RTO).",
+  "MESURES_CONTROLE": "Inspection systématique de piste anti-FOD et balayage avant chaque vague de décollages",
+  "ID_MESURES_CONTROLE": null,
+  "FREQUENCE_RISK_INITIAL": "Moyenne",
   "GRAVITE_RISK_INITIAL": "Critique",
   "ID_MATRICE_RISQUE": null,
-  "ID_MESURES_ADDITIONNELLES": 1,
+  "MESURES_ADDITIONNELLES": "Installation d'une balayeuse magnétique de piste et détection automatisée",
+  "ID_MESURES_ADDITIONNELLES": null,
   "FREQUENCE_RISK_FINAL": "Faible",
   "GRAVITE_RISK_FINAL": "Faible",
   "NIVEAU_MAITRISE": "ELEVE",
-  "DATE_STATUT_RISK": "2026-08-13",
+  "DATE_STATUT_RISK": "2026-08-20",
   "STATUT_RISK": "MAITRISE",
-  "RESPONSABLE": 3,
-  "DATE_CONTROLE": "2026-08-13",
-  "COMMENTAIRES": "Harnais de sécurité vérifié et fonctionnel.",
+  "RESPONSABLE": 1,
+  "DATE_CONTROLE": "2026-08-20",
+  "COMMENTAIRES": "Balayage de piste rigoureux appliqué avant chaque rotation.",
+  "ENTREPRISE_ID": 1,
   "IS_DELETE": false,
-  "created_at": "2026-08-13T13:00:00.000000Z",
-  "updated_at": "2026-08-13T13:00:00.000000Z",
+  "created_at": "2026-08-20T10:00:00.000000Z",
+  "updated_at": "2026-08-20T10:00:00.000000Z",
   "deleted_at": null,
   "category": {
-    "ID": 1,
-    "INTITULE": "Risques Professionnels",
-    "DESCRIPTION": "Catégorie regroupant les risques de l'environnement de travail direct."
+    "ID": 3,
+    "INTITULE": "Risques Environnementaux & Piste",
+    "DESCRIPTION": "Périls fauniques, FOD, état de piste et conditions météo."
   },
   "subcategory": {
     "ID": 1,
-    "INTITULE": "Chute de hauteur",
-    "DESCRIPTION": "Risques liés aux travaux en hauteur sans protection adéquate.",
-    "ID_RISK_CATEGORY": 1
+    "INTITULE": "FOD & Débris de piste",
+    "DESCRIPTION": "Risques liés aux débris étrangers sur aires de mouvement.",
+    "ID_RISK_CATEGORY": 3
   },
-  "mesure_controle": {
-    "ID": 1,
-    "INTITULE": "Port de masque obligatoire",
-    "DESCRIPTION": "Port obligatoire de masques FFP2 dans les zones poussiéreuses.",
-    "FREQUENCE": "Permanent",
-    "GRAVITE": "Haute"
-  },
-  "mesure_additionnelle": {
-    "ID": 1,
-    "INTITULE": "Installation d'un filet de protection",
-    "DESCRIPTION": "Installer des filets antichute en dessous de la zone d'échafaudage.",
-    "FREQUENCE": "Une fois",
-    "GRAVITE": "Moyenne"
-  },
+  "mesure_controle": null,
+  "mesure_additionnelle": null,
   "matrice_risque": null,
   "responsable_user": {
-    "id": 3,
-    "nom": "DUPONT",
-    "prenom": "Jean",
-    "email": "jean.dupont@example.com"
+    "id": 1,
+    "nom": "ASSEMAN",
+    "prenom": "Roger",
+    "email": "roger.asseman@compagnie1.com"
   }
 }
 ```
@@ -83,11 +74,11 @@
 Paramètres query optionnels :
 - `per_page` (int, défaut : `15`)
 - `page` (int, défaut : `1`)
-- `search` (string, filtre sur `REFERENCE_RISK`, `INTITULE_RISK`, `CONSEQUENSE_ULTIME` et `COMMENTAIRES`)
+- `search` (string, filtre textuel sur `REFERENCE_RISK`, `INTITULE_RISK`, `CONSEQUENSE_ULTIME`, `MESURES_CONTROLE`, `MESURES_ADDITIONNELLES` et `COMMENTAIRES`)
 
 Exemple :
 ```bash
-curl -X GET "https://asteasy.deepinovia.com/api/api/v1/risques?per_page=10&page=1&search=chute" \
+curl -X GET "https://asteasy.deepinovia.com/api/api/v1/risques?per_page=10&page=1&search=FOD" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -99,51 +90,46 @@ Réponse 200 (les relations associées sont chargées automatiquement) :
   "data": [
     {
       "ID": 1,
-      "REFERENCE_RISK": "RISK-001",
-      "INTITULE_RISK": "Chute de hauteur lors du montage de l'échafaudage",
-      "ID_RISK_CATEGORY": 1,
+      "REFERENCE_RISK": "RSK-2026-001",
+      "INTITULE_RISK": "Ingestion de corps étranger (FOD) lors du décollage",
+      "ID_RISK_CATEGORY": 3,
       "ID_RISK_SUBCATEGORY": 1,
-      "CONSEQUENSE_ULTIME": "Fractures graves ou décès",
-      "ID_MESURES_CONTROLE": 1,
-      "FREQUENCE_RISK_INITIAL": "Mensuelle",
+      "CONSEQUENSE_ULTIME": "Endommagement compresseur réacteur et interruption de décollage (RTO).",
+      "MESURES_CONTROLE": "Inspection systématique de piste anti-FOD et balayage avant chaque vague de décollages",
+      "ID_MESURES_CONTROLE": null,
+      "FREQUENCE_RISK_INITIAL": "Moyenne",
       "GRAVITE_RISK_INITIAL": "Critique",
       "ID_MATRICE_RISQUE": null,
-      "ID_MESURES_ADDITIONNELLES": 1,
+      "MESURES_ADDITIONNELLES": "Installation d'une balayeuse magnétique de piste et détection automatisée",
+      "ID_MESURES_ADDITIONNELLES": null,
       "FREQUENCE_RISK_FINAL": "Faible",
       "GRAVITE_RISK_FINAL": "Faible",
       "NIVEAU_MAITRISE": "ELEVE",
-      "DATE_STATUT_RISK": "2026-08-13",
+      "DATE_STATUT_RISK": "2026-08-20",
       "STATUT_RISK": "MAITRISE",
-      "RESPONSABLE": 3,
-      "DATE_CONTROLE": "2026-08-13",
-      "COMMENTAIRES": "Harnais de sécurité vérifié et fonctionnel.",
+      "RESPONSABLE": 1,
+      "DATE_CONTROLE": "2026-08-20",
+      "COMMENTAIRES": "Balayage de piste rigoureux appliqué avant chaque rotation.",
+      "ENTREPRISE_ID": 1,
       "IS_DELETE": false,
-      "created_at": "2026-08-13T13:00:00.000000Z",
-      "updated_at": "2026-08-13T13:00:00.000000Z",
+      "created_at": "2026-08-20T10:00:00.000000Z",
+      "updated_at": "2026-08-20T10:00:00.000000Z",
       "deleted_at": null,
       "category": {
-        "ID": 1,
-        "INTITULE": "Risques Professionnels",
-        "DESCRIPTION": "Catégorie regroupant les risques de l'environnement de travail direct."
+        "ID": 3,
+        "INTITULE": "Risques Environnementaux & Piste"
       },
       "subcategory": {
         "ID": 1,
-        "INTITULE": "Chute de hauteur",
-        "DESCRIPTION": "Risques liés aux travaux en hauteur sans protection adéquate.",
-        "ID_RISK_CATEGORY": 1
+        "INTITULE": "FOD & Débris de piste"
       },
-      "mesure_controle": {
-        "ID": 1,
-        "INTITULE": "Port de masque obligatoire"
-      },
-      "mesure_additionnelle": {
-        "ID": 1,
-        "INTITULE": "Installation d'un filet de protection"
-      },
+      "mesure_controle": null,
+      "mesure_additionnelle": null,
       "matrice_risque": null,
       "responsable_user": {
-        "id": 3,
-        "nom": "DUPONT"
+        "id": 1,
+        "nom": "ASSEMAN",
+        "prenom": "Roger"
       }
     }
   ],
@@ -171,12 +157,14 @@ Body JSON :
 - `INTITULE_RISK` (requis, string, max 255)
 - `ID_RISK_CATEGORY` (optionnel, integer, doit exister dans `TB_RISK_CATEGORY`)
 - `ID_RISK_SUBCATEGORY` (optionnel, integer, doit exister dans `TB_RISK_SUBCATEGORY`)
-- `CONSEQUENSE_ULTIME` (requis, string, max 255)
-- `ID_MESURES_CONTROLE` (optionnel, integer, doit exister dans `TB_MESURES_CONTROLE`)
+- `CONSEQUENSE_ULTIME` (requis, string)
+- `MESURES_CONTROLE` (optionnel, string / texte libre pour la mesure de contrôle associée)
+- `ID_MESURES_CONTROLE` (optionnel, integer, clé étrangère de compatibilité)
 - `FREQUENCE_RISK_INITIAL` (requis, string, max 255)
 - `GRAVITE_RISK_INITIAL` (requis, string, max 255)
 - `ID_MATRICE_RISQUE` (optionnel, integer, doit exister dans `TB_MATRICE_RISQUE`)
-- `ID_MESURES_ADDITIONNELLES` (optionnel, integer, doit exister dans `TB_MESURES_ADDITIONNELLES`)
+- `MESURES_ADDITIONNELLES` (optionnel, string / texte libre pour la mesure additionnelle)
+- `ID_MESURES_ADDITIONNELLES` (optionnel, integer, clé étrangère de compatibilité)
 - `FREQUENCE_RISK_FINAL` (requis, string, max 255)
 - `GRAVITE_RISK_FINAL` (requis, string, max 255)
 - `NIVEAU_MAITRISE` (requis, enum: `ELEVE`, `MOYENNE`, `FAIBLE`)
@@ -184,7 +172,8 @@ Body JSON :
 - `STATUT_RISK` (requis, enum: `MAITRISE`, `PARTIELLEMENT_MAITRISE`, `NON_MAITRISE`)
 - `RESPONSABLE` (optionnel, integer, doit exister dans `utilisateurs` sous `id`)
 - `DATE_CONTROLE` (requis, date au format `Y-m-d`)
-- `COMMENTAIRES` (requis, string)
+- `COMMENTAIRES` (optionnel, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -192,22 +181,22 @@ curl -X POST "https://asteasy.deepinovia.com/api/api/v1/risques" \
   -H "Authorization: Bearer <token_admin_ou_power_user>" \
   -H "Content-Type: application/json" \
   -d '{
-    "REFERENCE_RISK": "RISK-002",
-    "INTITULE_RISK": "Inhalation de gaz nocifs",
-    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience",
+    "REFERENCE_RISK": "RSK-2026-004",
+    "INTITULE_RISK": "Inhalation de gaz nocifs en maintenance",
+    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience temporaire",
+    "MESURES_CONTROLE": "Port de masque respiratoire FFP3 et contrôle d'''atmosphère",
     "FREQUENCE_RISK_INITIAL": "Moyenne",
     "GRAVITE_RISK_INITIAL": "Critique",
+    "MESURES_ADDITIONNELLES": "Système d'''extraction d'''air localisée et capteurs autonomes",
     "FREQUENCE_RISK_FINAL": "Faible",
     "GRAVITE_RISK_FINAL": "Moyenne",
     "NIVEAU_MAITRISE": "MOYENNE",
-    "DATE_STATUT_RISK": "2026-08-13",
+    "DATE_STATUT_RISK": "2026-08-28",
     "STATUT_RISK": "PARTIELLEMENT_MAITRISE",
-    "DATE_CONTROLE": "2026-08-13",
-    "COMMENTAIRES": "Ventilation installée.",
+    "DATE_CONTROLE": "2026-08-28",
+    "COMMENTAIRES": "Ventilation installée dans les hangars.",
     "ID_RISK_CATEGORY": 1,
-    "ID_RISK_SUBCATEGORY": 1,
-    "ID_MESURES_CONTROLE": 1,
-    "ID_MESURES_ADDITIONNELLES": 1
+    "ID_RISK_SUBCATEGORY": 1
   }'
 ```
 
@@ -217,45 +206,42 @@ Réponse 201 :
   "code_http": 201,
   "code_message": 201,
   "data": {
-    "ID": 2,
-    "REFERENCE_RISK": "RISK-002",
-    "INTITULE_RISK": "Inhalation de gaz nocifs",
+    "ID": 4,
+    "REFERENCE_RISK": "RSK-2026-004",
+    "INTITULE_RISK": "Inhalation de gaz nocifs en maintenance",
     "ID_RISK_CATEGORY": 1,
     "ID_RISK_SUBCATEGORY": 1,
-    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience",
-    "ID_MESURES_CONTROLE": 1,
+    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience temporaire",
+    "MESURES_CONTROLE": "Port de masque respiratoire FFP3 et contrôle d'atmosphère",
+    "ID_MESURES_CONTROLE": null,
     "FREQUENCE_RISK_INITIAL": "Moyenne",
     "GRAVITE_RISK_INITIAL": "Critique",
     "ID_MATRICE_RISQUE": null,
-    "ID_MESURES_ADDITIONNELLES": 1,
+    "MESURES_ADDITIONNELLES": "Système d'extraction d'air localisée et capteurs autonomes",
+    "ID_MESURES_ADDITIONNELLES": null,
     "FREQUENCE_RISK_FINAL": "Faible",
     "GRAVITE_RISK_FINAL": "Moyenne",
     "NIVEAU_MAITRISE": "MOYENNE",
-    "DATE_STATUT_RISK": "2026-08-13",
+    "DATE_STATUT_RISK": "2026-08-28",
     "STATUT_RISK": "PARTIELLEMENT_MAITRISE",
     "RESPONSABLE": null,
-    "DATE_CONTROLE": "2026-08-13",
-    "COMMENTAIRES": "Ventilation installée.",
+    "DATE_CONTROLE": "2026-08-28",
+    "COMMENTAIRES": "Ventilation installée dans les hangars.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
-    "created_at": "2026-08-13T13:05:00.000000Z",
-    "updated_at": "2026-08-13T13:05:00.000000Z",
+    "created_at": "2026-08-28T01:30:00.000000Z",
+    "updated_at": "2026-08-28T01:30:00.000000Z",
     "deleted_at": null,
     "category": {
       "ID": 1,
-      "INTITULE": "Risques Professionnels"
+      "INTITULE": "Risques Organisationnels & Humains"
     },
     "subcategory": {
       "ID": 1,
-      "INTITULE": "Chute de hauteur"
+      "INTITULE": "Chute de hauteur / Maintenance en hangar"
     },
-    "mesure_controle": {
-      "ID": 1,
-      "INTITULE": "Port de masque obligatoire"
-    },
-    "mesure_additionnelle": {
-      "ID": 1,
-      "INTITULE": "Installation d'un filet de protection"
-    },
+    "mesure_controle": null,
+    "mesure_additionnelle": null,
     "matrice_risque": null,
     "responsable_user": null
   }
@@ -271,7 +257,7 @@ Réponse 201 :
 
 Exemple :
 ```bash
-curl -X GET "https://asteasy.deepinovia.com/api/api/v1/risques/2" \
+curl -X GET "https://asteasy.deepinovia.com/api/api/v1/risques/4" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -281,45 +267,42 @@ Réponse 200 :
   "code_http": 200,
   "code_message": 200,
   "data": {
-    "ID": 2,
-    "REFERENCE_RISK": "RISK-002",
-    "INTITULE_RISK": "Inhalation de gaz nocifs",
+    "ID": 4,
+    "REFERENCE_RISK": "RSK-2026-004",
+    "INTITULE_RISK": "Inhalation de gaz nocifs en maintenance",
     "ID_RISK_CATEGORY": 1,
     "ID_RISK_SUBCATEGORY": 1,
-    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience",
-    "ID_MESURES_CONTROLE": 1,
+    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience temporaire",
+    "MESURES_CONTROLE": "Port de masque respiratoire FFP3 et contrôle d'atmosphère",
+    "ID_MESURES_CONTROLE": null,
     "FREQUENCE_RISK_INITIAL": "Moyenne",
     "GRAVITE_RISK_INITIAL": "Critique",
     "ID_MATRICE_RISQUE": null,
-    "ID_MESURES_ADDITIONNELLES": 1,
+    "MESURES_ADDITIONNELLES": "Système d'extraction d'air localisée et capteurs autonomes",
+    "ID_MESURES_ADDITIONNELLES": null,
     "FREQUENCE_RISK_FINAL": "Faible",
     "GRAVITE_RISK_FINAL": "Moyenne",
     "NIVEAU_MAITRISE": "MOYENNE",
-    "DATE_STATUT_RISK": "2026-08-13",
+    "DATE_STATUT_RISK": "2026-08-28",
     "STATUT_RISK": "PARTIELLEMENT_MAITRISE",
     "RESPONSABLE": null,
-    "DATE_CONTROLE": "2026-08-13",
-    "COMMENTAIRES": "Ventilation installée.",
+    "DATE_CONTROLE": "2026-08-28",
+    "COMMENTAIRES": "Ventilation installée dans les hangars.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
-    "created_at": "2026-08-13T13:05:00.000000Z",
-    "updated_at": "2026-08-13T13:05:00.000000Z",
+    "created_at": "2026-08-28T01:30:00.000000Z",
+    "updated_at": "2026-08-28T01:30:00.000000Z",
     "deleted_at": null,
     "category": {
       "ID": 1,
-      "INTITULE": "Risques Professionnels"
+      "INTITULE": "Risques Organisationnels & Humains"
     },
     "subcategory": {
       "ID": 1,
-      "INTITULE": "Chute de hauteur"
+      "INTITULE": "Chute de hauteur / Maintenance en hangar"
     },
-    "mesure_controle": {
-      "ID": 1,
-      "INTITULE": "Port de masque obligatoire"
-    },
-    "mesure_additionnelle": {
-      "ID": 1,
-      "INTITULE": "Installation d'un filet de protection"
-    },
+    "mesure_controle": null,
+    "mesure_additionnelle": null,
     "matrice_risque": null,
     "responsable_user": null
   }
@@ -340,12 +323,14 @@ Body JSON :
 - `INTITULE_RISK` (optionnel, string, max 255)
 - `ID_RISK_CATEGORY` (optionnel, integer, doit exister dans `TB_RISK_CATEGORY`)
 - `ID_RISK_SUBCATEGORY` (optionnel, integer, doit exister dans `TB_RISK_SUBCATEGORY`)
-- `CONSEQUENSE_ULTIME` (optionnel, string, max 255)
-- `ID_MESURES_CONTROLE` (optionnel, integer, doit exister dans `TB_MESURES_CONTROLE`)
+- `CONSEQUENSE_ULTIME` (optionnel, string)
+- `MESURES_CONTROLE` (optionnel, string / texte libre)
+- `ID_MESURES_CONTROLE` (optionnel, integer)
 - `FREQUENCE_RISK_INITIAL` (optionnel, string, max 255)
 - `GRAVITE_RISK_INITIAL` (optionnel, string, max 255)
 - `ID_MATRICE_RISQUE` (optionnel, integer, doit exister dans `TB_MATRICE_RISQUE`)
-- `ID_MESURES_ADDITIONNELLES` (optionnel, integer, doit exister dans `TB_MESURES_ADDITIONNELLES`)
+- `MESURES_ADDITIONNELLES` (optionnel, string / texte libre)
+- `ID_MESURES_ADDITIONNELLES` (optionnel, integer)
 - `FREQUENCE_RISK_FINAL` (optionnel, string, max 255)
 - `GRAVITE_RISK_FINAL` (optionnel, string, max 255)
 - `NIVEAU_MAITRISE` (optionnel, enum: `ELEVE`, `MOYENNE`, `FAIBLE`)
@@ -354,14 +339,16 @@ Body JSON :
 - `RESPONSABLE` (optionnel, integer, doit exister dans `utilisateurs` sous `id`)
 - `DATE_CONTROLE` (optionnel, date au format `Y-m-d`)
 - `COMMENTAIRES` (optionnel, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
-curl -X PUT "https://asteasy.deepinovia.com/api/api/v1/risques/2" \
+curl -X PUT "https://asteasy.deepinovia.com/api/api/v1/risques/4" \
   -H "Authorization: Bearer <token_admin_ou_power_user>" \
   -H "Content-Type: application/json" \
   -d '{
-    "STATUT_RISK": "MAITRISE"
+    "STATUT_RISK": "MAITRISE",
+    "MESURES_ADDITIONNELLES": "Système d'''extraction d'''air localisée validé et opérationnel"
   }'
 ```
 
@@ -371,45 +358,42 @@ Réponse 200 :
   "code_http": 200,
   "code_message": 200,
   "data": {
-    "ID": 2,
-    "REFERENCE_RISK": "RISK-002",
-    "INTITULE_RISK": "Inhalation de gaz nocifs",
+    "ID": 4,
+    "REFERENCE_RISK": "RSK-2026-004",
+    "INTITULE_RISK": "Inhalation de gaz nocifs en maintenance",
     "ID_RISK_CATEGORY": 1,
     "ID_RISK_SUBCATEGORY": 1,
-    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience",
-    "ID_MESURES_CONTROLE": 1,
+    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience temporaire",
+    "MESURES_CONTROLE": "Port de masque respiratoire FFP3 et contrôle d'atmosphère",
+    "ID_MESURES_CONTROLE": null,
     "FREQUENCE_RISK_INITIAL": "Moyenne",
     "GRAVITE_RISK_INITIAL": "Critique",
     "ID_MATRICE_RISQUE": null,
-    "ID_MESURES_ADDITIONNELLES": 1,
+    "MESURES_ADDITIONNELLES": "Système d'extraction d'air localisée validé et opérationnel",
+    "ID_MESURES_ADDITIONNELLES": null,
     "FREQUENCE_RISK_FINAL": "Faible",
     "GRAVITE_RISK_FINAL": "Moyenne",
     "NIVEAU_MAITRISE": "MOYENNE",
-    "DATE_STATUT_RISK": "2026-08-13",
+    "DATE_STATUT_RISK": "2026-08-28",
     "STATUT_RISK": "MAITRISE",
     "RESPONSABLE": null,
-    "DATE_CONTROLE": "2026-08-13",
-    "COMMENTAIRES": "Ventilation installée.",
+    "DATE_CONTROLE": "2026-08-28",
+    "COMMENTAIRES": "Ventilation installée dans les hangars.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
-    "created_at": "2026-08-13T13:05:00.000000Z",
-    "updated_at": "2026-08-13T13:10:00.000000Z",
+    "created_at": "2026-08-28T01:30:00.000000Z",
+    "updated_at": "2026-08-28T01:35:00.000000Z",
     "deleted_at": null,
     "category": {
       "ID": 1,
-      "INTITULE": "Risques Professionnels"
+      "INTITULE": "Risques Organisationnels & Humains"
     },
     "subcategory": {
       "ID": 1,
-      "INTITULE": "Chute de hauteur"
+      "INTITULE": "Chute de hauteur / Maintenance en hangar"
     },
-    "mesure_controle": {
-      "ID": 1,
-      "INTITULE": "Port de masque obligatoire"
-    },
-    "mesure_additionnelle": {
-      "ID": 1,
-      "INTITULE": "Installation d'un filet de protection"
-    },
+    "mesure_controle": null,
+    "mesure_additionnelle": null,
     "matrice_risque": null,
     "responsable_user": null
   }
@@ -429,7 +413,7 @@ Comportement :
 
 Exemple :
 ```bash
-curl -X DELETE "https://asteasy.deepinovia.com/api/api/v1/risques/2" \
+curl -X DELETE "https://asteasy.deepinovia.com/api/api/v1/risques/4" \
   -H "Authorization: Bearer <token_admin_ou_power_user>"
 ```
 
@@ -439,29 +423,32 @@ Réponse 200 :
   "code_http": 200,
   "code_message": 200,
   "data": {
-    "ID": 2,
-    "REFERENCE_RISK": "RISK-002",
-    "INTITULE_RISK": "Inhalation de gaz nocifs",
+    "ID": 4,
+    "REFERENCE_RISK": "RSK-2026-004",
+    "INTITULE_RISK": "Inhalation de gaz nocifs en maintenance",
     "ID_RISK_CATEGORY": 1,
     "ID_RISK_SUBCATEGORY": 1,
-    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience",
-    "ID_MESURES_CONTROLE": 1,
+    "CONSEQUENSE_ULTIME": "Intoxication et perte de conscience temporaire",
+    "MESURES_CONTROLE": "Port de masque respiratoire FFP3 et contrôle d'atmosphère",
+    "ID_MESURES_CONTROLE": null,
     "FREQUENCE_RISK_INITIAL": "Moyenne",
     "GRAVITE_RISK_INITIAL": "Critique",
     "ID_MATRICE_RISQUE": null,
-    "ID_MESURES_ADDITIONNELLES": 1,
+    "MESURES_ADDITIONNELLES": "Système d'extraction d'air localisée validé et opérationnel",
+    "ID_MESURES_ADDITIONNELLES": null,
     "FREQUENCE_RISK_FINAL": "Faible",
     "GRAVITE_RISK_FINAL": "Moyenne",
     "NIVEAU_MAITRISE": "MOYENNE",
-    "DATE_STATUT_RISK": "2026-08-13",
+    "DATE_STATUT_RISK": "2026-08-28",
     "STATUT_RISK": "MAITRISE",
     "RESPONSABLE": null,
-    "DATE_CONTROLE": "2026-08-13",
-    "COMMENTAIRES": "Ventilation installée.",
+    "DATE_CONTROLE": "2026-08-28",
+    "COMMENTAIRES": "Ventilation installée dans les hangars.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": true,
-    "created_at": "2026-08-13T13:05:00.000000Z",
-    "updated_at": "2026-08-13T13:10:00.000000Z",
-    "deleted_at": "2026-08-13T13:15:00.000000Z"
+    "created_at": "2026-08-28T01:30:00.000000Z",
+    "updated_at": "2026-08-28T01:35:00.000000Z",
+    "deleted_at": "2026-08-28T01:40:00.000000Z"
   }
 }
 ```
@@ -472,4 +459,5 @@ Réponse 200 :
 - Routes : `routes/api.php`
 - Contrôleur : `app/Http/Controllers/Api/V1/RisquesController.php`
 - Modèle : `app/Models/Risque.php`
+- Migration : `database/migrations/2026_08_28_013000_change_mesures_fields_to_text_in_tb_risques_table.php`
 - Stratégie d'autorisation (Policy) : `app/Policies/RisquesPolicy.php`

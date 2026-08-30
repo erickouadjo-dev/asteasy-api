@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class SafetyAction extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_SAFETY_ACTION';
     protected $primaryKey = 'ID';
@@ -36,6 +37,7 @@ class SafetyAction extends Model
         'ID_RISQUE',
         'ACTION_FREQUENCE_RISQUE',
         'ACTION_GRAVITE_RISQUE',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
@@ -49,10 +51,16 @@ class SafetyAction extends Model
         'RESPONSABLE' => 'integer',
         'ID_TAG' => 'integer',
         'ID_RISQUE' => 'integer',
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at', 'DATE_OUVERTURE', 'DATE_CLOTURE'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function eventAnalyse()
     {
@@ -167,6 +175,7 @@ class SafetyAction extends Model
                 'ID_RISQUE'               => 'nullable|integer',
                 'ACTION_FREQUENCE_RISQUE' => 'required|string|in:OUI,NON,NON_APPLICABLE',
                 'ACTION_GRAVITE_RISQUE'   => 'required|string|in:OUI,NON,NON_APPLICABLE',
+                'ENTREPRISE_ID'           => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -270,6 +279,7 @@ class SafetyAction extends Model
                 'ID_RISQUE'               => 'nullable|integer',
                 'ACTION_FREQUENCE_RISQUE' => 'nullable|string|in:OUI,NON,NON_APPLICABLE',
                 'ACTION_GRAVITE_RISQUE'   => 'nullable|string|in:OUI,NON,NON_APPLICABLE',
+                'ENTREPRISE_ID'           => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

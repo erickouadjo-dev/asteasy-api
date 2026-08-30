@@ -6,7 +6,7 @@
 - Préfixe API : `/v1`
 - Ressource : `/mesures-additionnelles`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_MESURES_ADDITIONNELLES` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_MESURES_ADDITIONNELLES` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -23,6 +23,7 @@
   "COMMENTAIRES": "À réaliser avant le début des travaux de gros oeuvre.",
   "ID_TAG_ETIQUETTE": 1,
   "DEPARTEMENT_RESPONSABLE": 3,
+  "ENTREPRISE_ID": 1,
   "IS_DELETE": false,
   "created_at": "2026-08-13T13:00:00.000000Z",
   "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -75,6 +76,7 @@ Réponse 200 :
       "COMMENTAIRES": "À réaliser avant le début des travaux de gros oeuvre.",
       "ID_TAG_ETIQUETTE": 1,
       "DEPARTEMENT_RESPONSABLE": 3,
+      "ENTREPRISE_ID": 1,
       "IS_DELETE": false,
       "created_at": "2026-08-13T13:00:00.000000Z",
       "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -118,6 +120,7 @@ Body JSON :
 - `COMMENTAIRES` (requis, string)
 - `ID_TAG_ETIQUETTE` (optionnel, integer, doit exister dans `TB_TARG_ETIQUETTE`)
 - `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans la table `utilisateurs` sous `id`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -149,6 +152,7 @@ Réponse 201 :
     "COMMENTAIRES": "À distribuer aux superviseurs.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -194,6 +198,7 @@ Réponse 200 :
     "COMMENTAIRES": "À distribuer aux superviseurs.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -229,6 +234,7 @@ Body JSON :
 - `COMMENTAIRES` (optionnel, string)
 - `ID_TAG_ETIQUETTE` (optionnel, integer, doit exister dans `TB_TARG_ETIQUETTE`)
 - `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans la table `utilisateurs` sous `id`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -254,6 +260,7 @@ Réponse 200 :
     "COMMENTAIRES": "À distribuer aux superviseurs.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",
@@ -303,6 +310,7 @@ Réponse 200 :
     "COMMENTAIRES": "À distribuer aux superviseurs.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": true,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",

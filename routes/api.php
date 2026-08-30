@@ -139,6 +139,34 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::put('/bases/{id}', 'App\Http\Controllers\Api\V1\BasesController@update');
     Route::delete('/bases/{id}', 'App\Http\Controllers\Api\V1\BasesController@destroy');
 
+    //base-materiels
+    Route::post('/base-materiels', 'App\Http\Controllers\Api\V1\BaseMaterielsController@store');
+    Route::get('/base-materiels', 'App\Http\Controllers\Api\V1\BaseMaterielsController@index');
+    Route::get('/base-materiels/{id}', 'App\Http\Controllers\Api\V1\BaseMaterielsController@show');
+    Route::put('/base-materiels/{id}', 'App\Http\Controllers\Api\V1\BaseMaterielsController@update');
+    Route::delete('/base-materiels/{id}', 'App\Http\Controllers\Api\V1\BaseMaterielsController@destroy');
+
+    //aeronefs
+    Route::post('/aeronefs', 'App\Http\Controllers\Api\V1\AeronefsController@store');
+    Route::get('/aeronefs', 'App\Http\Controllers\Api\V1\AeronefsController@index');
+    Route::get('/aeronefs/{id}', 'App\Http\Controllers\Api\V1\AeronefsController@show');
+    Route::put('/aeronefs/{id}', 'App\Http\Controllers\Api\V1\AeronefsController@update');
+    Route::delete('/aeronefs/{id}', 'App\Http\Controllers\Api\V1\AeronefsController@destroy');
+
+    //vehicules
+    Route::post('/vehicules', 'App\Http\Controllers\Api\V1\VehiculesController@store');
+    Route::get('/vehicules', 'App\Http\Controllers\Api\V1\VehiculesController@index');
+    Route::get('/vehicules/{id}', 'App\Http\Controllers\Api\V1\VehiculesController@show');
+    Route::put('/vehicules/{id}', 'App\Http\Controllers\Api\V1\VehiculesController@update');
+    Route::delete('/vehicules/{id}', 'App\Http\Controllers\Api\V1\VehiculesController@destroy');
+
+    //equipements
+    Route::post('/equipements', 'App\Http\Controllers\Api\V1\EquipementsController@store');
+    Route::get('/equipements', 'App\Http\Controllers\Api\V1\EquipementsController@index');
+    Route::get('/equipements/{id}', 'App\Http\Controllers\Api\V1\EquipementsController@show');
+    Route::put('/equipements/{id}', 'App\Http\Controllers\Api\V1\EquipementsController@update');
+    Route::delete('/equipements/{id}', 'App\Http\Controllers\Api\V1\EquipementsController@destroy');
+
     //avancements
     Route::post('/avancements', 'App\Http\Controllers\Api\V1\AvancementsController@store');
     Route::get('/avancements', 'App\Http\Controllers\Api\V1\AvancementsController@index');

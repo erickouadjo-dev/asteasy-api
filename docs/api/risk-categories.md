@@ -6,7 +6,7 @@
 - Préfixe API : `/v1`
 - Ressource : `/risk-categories`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_RISK_CATEGORY` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_RISK_CATEGORY` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -18,6 +18,7 @@
   "ID": 1,
   "INTITULE": "Risques Professionnels",
   "DESCRIPTION": "Catégorie regroupant les risques de l'environnement de travail direct.",
+  "ENTREPRISE_ID": 1,
   "IS_DELETE": false,
   "created_at": "2026-08-13T13:00:00.000000Z",
   "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -53,6 +54,7 @@ Réponse 200 :
       "ID": 1,
       "INTITULE": "Risques Professionnels",
       "DESCRIPTION": "Catégorie regroupant les risques de l'environnement de travail direct.",
+      "ENTREPRISE_ID": 1,
       "IS_DELETE": false,
       "created_at": "2026-08-13T13:00:00.000000Z",
       "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -81,6 +83,7 @@ Réponse 200 :
 Body JSON :
 - `INTITULE` (requis, string, max 255, unique dans `TB_RISK_CATEGORY`)
 - `DESCRIPTION` (requis, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -102,6 +105,7 @@ Réponse 201 :
     "ID": 2,
     "INTITULE": "Risques Environnementaux",
     "DESCRIPTION": "Risques liés aux facteurs climatiques et naturels.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -132,6 +136,7 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Risques Environnementaux",
     "DESCRIPTION": "Risques liés aux facteurs climatiques et naturels.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -152,6 +157,7 @@ Body JSON :
 - tous les champs sont optionnels
 - `INTITULE` (optionnel, string, max 255, unique dans `TB_RISK_CATEGORY` sauf pour cet ID)
 - `DESCRIPTION` (optionnel, string)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -172,6 +178,7 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Risques Environnementaux",
     "DESCRIPTION": "Description mise à jour pour les risques naturels.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",
@@ -206,6 +213,7 @@ Réponse 200 :
     "ID": 2,
     "INTITULE": "Risques Environnementaux",
     "DESCRIPTION": "Description mise à jour pour les risques naturels.",
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": true,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",

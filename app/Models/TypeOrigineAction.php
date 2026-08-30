@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 use App\Traits\TrackCreatedBy;
+use App\Traits\BelongsToTenant;
 
 class TypeOrigineAction extends Model
 {
-    use HasFactory, SoftDeletes, TrackCreatedBy;
+    use HasFactory, SoftDeletes, TrackCreatedBy, BelongsToTenant;
 
     protected $table = 'TB_TYPE_ORIGINE_ACTION';
     protected $primaryKey = 'ID';
@@ -23,15 +24,22 @@ class TypeOrigineAction extends Model
     protected $fillable = [
         'INTITULE',
         'DESCRIPTION',
-        'IS_DELETE',
         'CREATED_BY',
+        'ENTREPRISE_ID',
+        'IS_DELETE',
     ];
 
     protected $casts = [
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function createdBy()
     {
@@ -94,8 +102,9 @@ class TypeOrigineAction extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'    => 'required|string|max:255|unique:TB_TYPE_ORIGINE_ACTION,INTITULE',
-                'DESCRIPTION' => 'required|string',
+                'INTITULE'      => 'required|string|max:255|unique:TB_TYPE_ORIGINE_ACTION,INTITULE',
+                'DESCRIPTION'   => 'required|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -182,8 +191,9 @@ class TypeOrigineAction extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'    => 'nullable|string|max:255|unique:TB_TYPE_ORIGINE_ACTION,INTITULE,' . $id . ',ID',
-                'DESCRIPTION' => 'nullable|string',
+                'INTITULE'      => 'nullable|string|max:255|unique:TB_TYPE_ORIGINE_ACTION,INTITULE,' . $id . ',ID',
+                'DESCRIPTION'   => 'nullable|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

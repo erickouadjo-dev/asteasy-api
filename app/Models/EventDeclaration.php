@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class EventDeclaration extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_EVENT_DECLARATION';
     protected $primaryKey = 'ID';
@@ -32,16 +33,23 @@ class EventDeclaration extends Model
         'GPS_POSITION',
         'EVENT_DESCRIPTION',
         'FICHIERS_IMAGES',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
     protected $casts = [
         'RAPORTEUR' => 'integer',
         'ID_BASE_MATERIEL' => 'integer',
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at', 'DATE_EVENT'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function raporteurUser()
     {
@@ -117,6 +125,7 @@ class EventDeclaration extends Model
                 'GPS_POSITION'       => 'nullable|string|max:255',
                 'EVENT_DESCRIPTION'  => 'required|string',
                 'FICHIERS_IMAGES'    => 'nullable|string',
+                'ENTREPRISE_ID'      => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -216,6 +225,7 @@ class EventDeclaration extends Model
                 'GPS_POSITION'       => 'nullable|string|max:255',
                 'EVENT_DESCRIPTION'  => 'nullable|string',
                 'FICHIERS_IMAGES'    => 'nullable|string',
+                'ENTREPRISE_ID'      => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

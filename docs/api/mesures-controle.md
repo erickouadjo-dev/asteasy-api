@@ -6,7 +6,7 @@
 - Préfixe API : `/v1`
 - Ressource : `/mesures-controle`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_MESURES_CONTROLE` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_MESURES_CONTROLE` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -23,6 +23,7 @@
   "COMMENTAIRES": "À vérifier par le chef d'équipe quotidiennement.",
   "ID_TAG_ETIQUETTE": 1,
   "DEPARTEMENT_RESPONSABLE": 3,
+  "ENTREPRISE_ID": 1,
   "IS_DELETE": false,
   "created_at": "2026-08-13T13:00:00.000000Z",
   "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -75,6 +76,7 @@ Réponse 200 :
       "COMMENTAIRES": "À vérifier par le chef d'équipe quotidiennement.",
       "ID_TAG_ETIQUETTE": 1,
       "DEPARTEMENT_RESPONSABLE": 3,
+      "ENTREPRISE_ID": 1,
       "IS_DELETE": false,
       "created_at": "2026-08-13T13:00:00.000000Z",
       "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -117,7 +119,8 @@ Body JSON :
 - `GRAVITE` (requis, string, max 255)
 - `COMMENTAIRES` (requis, string)
 - `ID_TAG_ETIQUETTE` (optionnel, integer, doit exister dans `TB_TARG_ETIQUETTE`)
-- `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans la table `utilisateurs` sous `id`)
+- `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans `utilisateurs`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE` sous `id`)
 
 Exemple :
 ```bash
@@ -149,6 +152,7 @@ Réponse 201 :
     "COMMENTAIRES": "Remplir la fiche de contrôle correspondante.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -194,6 +198,7 @@ Réponse 200 :
     "COMMENTAIRES": "Remplir la fiche de contrôle correspondante.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -222,13 +227,14 @@ Réponse 200 :
 
 Body JSON :
 - tous les champs sont optionnels
-- `INTITULE` (optionnel, string, max 255, unique sauf pour cet ID)
+- `INTITULE` (optionnel, string, max 255, unique dans `TB_MESURES_CONTROLE` sauf pour cet ID)
 - `DESCRIPTION` (optionnel, string)
 - `FREQUENCE` (optionnel, string, max 255)
 - `GRAVITE` (optionnel, string, max 255)
 - `COMMENTAIRES` (optionnel, string)
 - `ID_TAG_ETIQUETTE` (optionnel, integer, doit exister dans `TB_TARG_ETIQUETTE`)
-- `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans la table `utilisateurs` sous `id`)
+- `DEPARTEMENT_RESPONSABLE` (optionnel, integer, doit exister dans `utilisateurs`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE` sous `id`)
 
 Exemple :
 ```bash
@@ -254,6 +260,7 @@ Réponse 200 :
     "COMMENTAIRES": "Remplir la fiche de contrôle correspondante.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",
@@ -303,6 +310,7 @@ Réponse 200 :
     "COMMENTAIRES": "Remplir la fiche de contrôle correspondante.",
     "ID_TAG_ETIQUETTE": 1,
     "DEPARTEMENT_RESPONSABLE": 3,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": true,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",

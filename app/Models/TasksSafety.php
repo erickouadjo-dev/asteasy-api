@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\BelongsToTenant;
 
 class TasksSafety extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_TASKS_SAFETY';
     protected $primaryKey = 'ID';
@@ -36,6 +37,7 @@ class TasksSafety extends Model
         'COMMENTAIRES_OBSERVATIONS',
         'FICHIERS_IMAGES',
         'ID_TAG_ETIQUETTE',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
@@ -48,10 +50,16 @@ class TasksSafety extends Model
         'ID_AVANCEMENT' => 'integer',
         'RESPONSABLE_PROPRIETAIRE' => 'integer',
         'ID_TAG_ETIQUETTE' => 'integer',
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at', 'DATE_OUVERTURE', 'DATE_BUTEE', 'DATE_FERMETURE', 'RAPPEL_DATE_BUTEE'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function safetyAction()
     {
@@ -156,6 +164,7 @@ class TasksSafety extends Model
                 'COMMENTAIRES_OBSERVATIONS'=> 'nullable|string',
                 'FICHIERS_IMAGES'          => 'nullable|string',
                 'ID_TAG_ETIQUETTE'         => 'nullable|integer',
+                'ENTREPRISE_ID'            => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -259,6 +268,7 @@ class TasksSafety extends Model
                 'COMMENTAIRES_OBSERVATIONS'=> 'nullable|string',
                 'FICHIERS_IMAGES'          => 'nullable|string',
                 'ID_TAG_ETIQUETTE'         => 'nullable|integer',
+                'ENTREPRISE_ID'            => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

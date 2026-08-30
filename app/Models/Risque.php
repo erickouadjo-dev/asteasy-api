@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace AppModels;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use IlluminateDatabaseEloquentFactoriesHasFactory;
+use IlluminateDatabaseEloquentModel;
+use IlluminateDatabaseEloquentSoftDeletes;
+use IlluminateHttpRequest;
+use IlluminateSupportFacadesLog;
+use IlluminateSupportFacadesValidator;
+
+use AppTraitsBelongsToTenant;
 
 class Risque extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_RISQUES';
     protected $primaryKey = 'ID';
@@ -24,10 +26,12 @@ class Risque extends Model
         'ID_RISK_CATEGORY',
         'ID_RISK_SUBCATEGORY',
         'CONSEQUENSE_ULTIME',
+        'MESURES_CONTROLE',
         'ID_MESURES_CONTROLE',
         'FREQUENCE_RISK_INITIAL',
         'GRAVITE_RISK_INITIAL',
         'ID_MATRICE_RISQUE',
+        'MESURES_ADDITIONNELLES',
         'ID_MESURES_ADDITIONNELLES',
         'FREQUENCE_RISK_FINAL',
         'GRAVITE_RISK_FINAL',
@@ -37,16 +41,23 @@ class Risque extends Model
         'RESPONSABLE',
         'DATE_CONTROLE',
         'COMMENTAIRES',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
     protected $casts = [
+        'ENTREPRISE_ID' => 'integer',
         'IS_DELETE' => 'boolean',
         'DATE_STATUT_RISK' => 'date',
         'DATE_CONTROLE' => 'date',
     ];
 
     protected $dates = ['deleted_at', 'DATE_STATUT_RISK', 'DATE_CONTROLE'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function category()
     {
@@ -94,6 +105,8 @@ class Risque extends Model
                     $q->where('REFERENCE_RISK', 'like', '%' . $search . '%')
                       ->orWhere('INTITULE_RISK', 'like', '%' . $search . '%')
                       ->orWhere('CONSEQUENSE_ULTIME', 'like', '%' . $search . '%')
+                      ->orWhere('MESURES_CONTROLE', 'like', '%' . $search . '%')
+                      ->orWhere('MESURES_ADDITIONNELLES', 'like', '%' . $search . '%')
                       ->orWhere('COMMENTAIRES', 'like', '%' . $search . '%');
                 });
             }
@@ -141,11 +154,13 @@ class Risque extends Model
                 'INTITULE_RISK'             => 'required|string|max:255',
                 'ID_RISK_CATEGORY'          => 'nullable|integer|exists:TB_RISK_CATEGORY,ID',
                 'ID_RISK_SUBCATEGORY'       => 'nullable|integer|exists:TB_RISK_SUBCATEGORY,ID',
-                'CONSEQUENSE_ULTIME'        => 'required|string|max:255',
+                'CONSEQUENSE_ULTIME'        => 'required|string',
+                'MESURES_CONTROLE'          => 'nullable|string',
                 'ID_MESURES_CONTROLE'       => 'nullable|integer|exists:TB_MESURES_CONTROLE,ID',
                 'FREQUENCE_RISK_INITIAL'    => 'required|string|max:255',
                 'GRAVITE_RISK_INITIAL'      => 'required|string|max:255',
                 'ID_MATRICE_RISQUE'         => 'nullable|integer|exists:TB_MATRICE_RISQUE,ID',
+                'MESURES_ADDITIONNELLES'    => 'nullable|string',
                 'ID_MESURES_ADDITIONNELLES' => 'nullable|integer|exists:TB_MESURES_ADDITIONNELLES,ID',
                 'FREQUENCE_RISK_FINAL'      => 'required|string|max:255',
                 'GRAVITE_RISK_FINAL'        => 'required|string|max:255',
@@ -154,7 +169,8 @@ class Risque extends Model
                 'STATUT_RISK'               => 'required|in:MAITRISE,PARTIELLEMENT_MAITRISE,NON_MAITRISE',
                 'RESPONSABLE'               => 'nullable|integer|exists:utilisateurs,id',
                 'DATE_CONTROLE'             => 'required|date_format:Y-m-d',
-                'COMMENTAIRES'              => 'required|string',
+                'COMMENTAIRES'              => 'nullable|string',
+                'ENTREPRISE_ID'             => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -247,11 +263,13 @@ class Risque extends Model
                 'INTITULE_RISK'             => 'nullable|string|max:255',
                 'ID_RISK_CATEGORY'          => 'nullable|integer|exists:TB_RISK_CATEGORY,ID',
                 'ID_RISK_SUBCATEGORY'       => 'nullable|integer|exists:TB_RISK_SUBCATEGORY,ID',
-                'CONSEQUENSE_ULTIME'        => 'nullable|string|max:255',
+                'CONSEQUENSE_ULTIME'        => 'nullable|string',
+                'MESURES_CONTROLE'          => 'nullable|string',
                 'ID_MESURES_CONTROLE'       => 'nullable|integer|exists:TB_MESURES_CONTROLE,ID',
                 'FREQUENCE_RISK_INITIAL'    => 'nullable|string|max:255',
                 'GRAVITE_RISK_INITIAL'      => 'nullable|string|max:255',
                 'ID_MATRICE_RISQUE'         => 'nullable|integer|exists:TB_MATRICE_RISQUE,ID',
+                'MESURES_ADDITIONNELLES'    => 'nullable|string',
                 'ID_MESURES_ADDITIONNELLES' => 'nullable|integer|exists:TB_MESURES_ADDITIONNELLES,ID',
                 'FREQUENCE_RISK_FINAL'      => 'nullable|string|max:255',
                 'GRAVITE_RISK_FINAL'        => 'nullable|string|max:255',
@@ -261,6 +279,7 @@ class Risque extends Model
                 'RESPONSABLE'               => 'nullable|integer|exists:utilisateurs,id',
                 'DATE_CONTROLE'             => 'nullable|date_format:Y-m-d',
                 'COMMENTAIRES'              => 'nullable|string',
+                'ENTREPRISE_ID'             => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

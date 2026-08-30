@@ -146,6 +146,22 @@ use App\Utility\PolicyResources\Agrements as AgrementsResource;
 use App\Models\Base as BaseResource;
 use App\Policies\BasesPolicy;
 use App\Utility\PolicyResources\Bases as BasesResource;
+
+use App\Models\BaseMateriel as BaseMaterielResource;
+use App\Policies\BaseMaterielsPolicy;
+use App\Utility\PolicyResources\BaseMateriels as BaseMaterielsResource;
+
+use App\Models\Aeronef as AeronefResource;
+use App\Policies\AeronefsPolicy;
+use App\Utility\PolicyResources\Aeronefs as AeronefsResource;
+
+use App\Models\Vehicule as VehiculeResource;
+use App\Policies\VehiculesPolicy;
+use App\Utility\PolicyResources\Vehicules as VehiculesResource;
+
+use App\Models\Equipement as EquipementResource;
+use App\Policies\EquipementsPolicy;
+use App\Utility\PolicyResources\Equipements as EquipementsResource;
 use App\Models\Module as ModuleResource;
 use App\Policies\ModulesPolicy;
 use App\Utility\PolicyResources\Modules as ModulesResource;
@@ -332,6 +348,14 @@ class AuthServiceProvider extends ServiceProvider
         AgrementResource::class => AgrementsPolicy::class,
         BasesResource::class => BasesPolicy::class,
         BaseResource::class => BasesPolicy::class,
+        BaseMaterielsResource::class => BaseMaterielsPolicy::class,
+        BaseMaterielResource::class => BaseMaterielsPolicy::class,
+        AeronefsResource::class => AeronefsPolicy::class,
+        AeronefResource::class => AeronefsPolicy::class,
+        VehiculesResource::class => VehiculesPolicy::class,
+        VehiculeResource::class => VehiculesPolicy::class,
+        EquipementsResource::class => EquipementsPolicy::class,
+        EquipementResource::class => EquipementsPolicy::class,
         ModulesResource::class => ModulesPolicy::class,
         ModuleResource::class => ModulesPolicy::class,
         RolesPermissionsResource::class => RolesPermissionsPolicy::class,

@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+use App\Traits\BelongsToTenant;
+
 class RiskCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     protected $table = 'TB_RISK_CATEGORY';
     protected $primaryKey = 'ID';
@@ -21,14 +23,21 @@ class RiskCategory extends Model
     protected $fillable = [
         'INTITULE',
         'DESCRIPTION',
+        'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
     protected $casts = [
-        'IS_DELETE' => 'boolean',
+        'ENTREPRISE_ID' => 'integer',
+        'IS_DELETE'     => 'boolean',
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+    }
 
     public function subcategories()
     {
@@ -91,8 +100,9 @@ class RiskCategory extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'    => 'required|string|max:255|unique:TB_RISK_CATEGORY,INTITULE',
-                'DESCRIPTION' => 'required|string',
+                'INTITULE'      => 'required|string|max:255|unique:TB_RISK_CATEGORY,INTITULE',
+                'DESCRIPTION'   => 'required|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -179,8 +189,9 @@ class RiskCategory extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'    => 'nullable|string|max:255|unique:TB_RISK_CATEGORY,INTITULE,' . $id . ',ID',
-                'DESCRIPTION' => 'nullable|string',
+                'INTITULE'      => 'nullable|string|max:255|unique:TB_RISK_CATEGORY,INTITULE,' . $id . ',ID',
+                'DESCRIPTION'   => 'nullable|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {

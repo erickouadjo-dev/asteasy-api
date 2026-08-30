@@ -6,7 +6,7 @@
 - Préfixe API : `/v1`
 - Ressource : `/risk-subcategories`
 - Middleware de groupe : `cors`, `multi_authentication`
-- **Isolation Multi-Tenant** : Non applicable (la table `TB_RISK_SUBCATEGORY` ne contient pas de colonne `ENTREPRISE_ID` et n'est pas cloisonnée par locataire).
+- **Isolation Multi-Tenant** : Actif (la table `TB_RISK_SUBCATEGORY` contient la colonne `ENTREPRISE_ID` et est filtrée par locataire via le trait `BelongsToTenant`).
 - Policy :
   - Lecture (`index`, `show`) : tout utilisateur authentifié.
   - Écriture (`store`, `update`, `destroy`) : utilisateur de type `ADMIN` ou `POWER_USER`.
@@ -19,6 +19,7 @@
   "INTITULE": "Chute de hauteur",
   "DESCRIPTION": "Risques liés aux travaux en hauteur sans protection adéquate.",
   "ID_RISK_CATEGORY": 1,
+  "ENTREPRISE_ID": 1,
   "IS_DELETE": false,
   "created_at": "2026-08-13T13:00:00.000000Z",
   "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -64,6 +65,7 @@ Réponse 200 (la relation `category` est chargée par défaut) :
       "INTITULE": "Chute de hauteur",
       "DESCRIPTION": "Risques liés aux travaux en hauteur sans protection adéquate.",
       "ID_RISK_CATEGORY": 1,
+      "ENTREPRISE_ID": 1,
       "IS_DELETE": false,
       "created_at": "2026-08-13T13:00:00.000000Z",
       "updated_at": "2026-08-13T13:00:00.000000Z",
@@ -102,6 +104,7 @@ Body JSON :
 - `INTITULE` (requis, string, max 255, unique dans `TB_RISK_SUBCATEGORY`)
 - `DESCRIPTION` (requis, string)
 - `ID_RISK_CATEGORY` (requis, integer, doit exister dans la table `TB_RISK_CATEGORY` sous la colonne `ID`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -125,6 +128,7 @@ Réponse 201 (la relation `category` est renvoyée) :
     "INTITULE": "Exposition aux produits chimiques",
     "DESCRIPTION": "Inhalation ou contact cutané avec des substances corrosives.",
     "ID_RISK_CATEGORY": 1,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -165,6 +169,7 @@ Réponse 200 :
     "INTITULE": "Exposition aux produits chimiques",
     "DESCRIPTION": "Inhalation ou contact cutané avec des substances corrosives.",
     "ID_RISK_CATEGORY": 1,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:05:00.000000Z",
@@ -195,6 +200,7 @@ Body JSON :
 - `INTITULE` (optionnel, string, max 255, unique dans `TB_RISK_SUBCATEGORY` sauf pour cet ID)
 - `DESCRIPTION` (optionnel, string)
 - `ID_RISK_CATEGORY` (optionnel, integer, doit exister dans `TB_RISK_CATEGORY` sous la colonne `ID`)
+- `ENTREPRISE_ID` (optionnel, integer, doit exister dans `TB_ENTREPRISE`)
 
 Exemple :
 ```bash
@@ -216,6 +222,7 @@ Réponse 200 :
     "INTITULE": "Exposition aux produits chimiques",
     "DESCRIPTION": "Nouvelle description mise à jour.",
     "ID_RISK_CATEGORY": 1,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": false,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",
@@ -260,6 +267,7 @@ Réponse 200 :
     "INTITULE": "Exposition aux produits chimiques",
     "DESCRIPTION": "Nouvelle description mise à jour.",
     "ID_RISK_CATEGORY": 1,
+    "ENTREPRISE_ID": 1,
     "IS_DELETE": true,
     "created_at": "2026-08-13T13:05:00.000000Z",
     "updated_at": "2026-08-13T13:10:00.000000Z",

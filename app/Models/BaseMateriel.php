@@ -8,41 +8,55 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-
 use App\Traits\BelongsToTenant;
 
-class RiskSubcategory extends Model
+class BaseMateriel extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
 
-    protected $table = 'TB_RISK_SUBCATEGORY';
+    protected $table = 'TB_BASE_MATERIEL';
     protected $primaryKey = 'ID';
     public $timestamps = true;
     public $incrementing = true;
 
     protected $fillable = [
-        'INTITULE',
-        'DESCRIPTION',
-        'ID_RISK_CATEGORY',
+        'BASE_ID',
+        'AERONEF_ID',
+        'VEHICULE_ID',
+        'EQUIPEMENT_ID',
         'ENTREPRISE_ID',
         'IS_DELETE',
     ];
 
     protected $casts = [
+        'BASE_ID' => 'integer',
+        'AERONEF_ID' => 'integer',
+        'VEHICULE_ID' => 'integer',
+        'EQUIPEMENT_ID' => 'integer',
         'ENTREPRISE_ID' => 'integer',
-        'IS_DELETE'     => 'boolean',
+        'IS_DELETE' => 'boolean',
     ];
 
     protected $dates = ['deleted_at'];
 
-    public function entreprise()
+    public function base()
     {
-        return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
+        return $this->belongsTo(Base::class, 'BASE_ID', 'ID');
     }
 
-    public function category()
+    public function aeronef()
     {
-        return $this->belongsTo(RiskCategory::class, 'ID_RISK_CATEGORY', 'ID');
+        return $this->belongsTo(Aeronef::class, 'AERONEF_ID', 'ID');
+    }
+
+    public function vehicule()
+    {
+        return $this->belongsTo(Vehicule::class, 'VEHICULE_ID', 'ID');
+    }
+
+    public function equipement()
+    {
+        return $this->belongsTo(Equipement::class, 'EQUIPEMENT_ID', 'ID');
     }
 
     public static function lister(Request $request)
@@ -54,12 +68,25 @@ class RiskSubcategory extends Model
 
             $query = self::where('IS_DELETE', false)
                 ->whereNull('deleted_at')
-                ->with('category');
+                ->with(['base', 'aeronef', 'vehicule', 'equipement']);
 
             if (!empty($search)) {
                 $query->where(function($q) use ($search) {
-                    $q->where('INTITULE', 'like', '%' . $search . '%')
-                      ->orWhere('DESCRIPTION', 'like', '%' . $search . '%');
+                    $q->whereHas('base', function($sq) use ($search) {
+                        $sq->where('INTITULE', 'like', '%' . $search . '%');
+                    })->orWhereHas('aeronef', function($sq) use ($search) {
+                        $sq->where('MARQUE', 'like', '%' . $search . '%')
+                           ->orWhere('TYPE_MODELE', 'like', '%' . $search . '%')
+                           ->orWhere('IMMATRICULATION', 'like', '%' . $search . '%');
+                    })->orWhereHas('vehicule', function($sq) use ($search) {
+                        $sq->where('MARQUE', 'like', '%' . $search . '%')
+                           ->orWhere('TYPE_MODELE', 'like', '%' . $search . '%')
+                           ->orWhere('IMMATRICULATION', 'like', '%' . $search . '%');
+                    })->orWhereHas('equipement', function($sq) use ($search) {
+                        $sq->where('MARQUE', 'like', '%' . $search . '%')
+                           ->orWhere('TYPE_MODELE', 'like', '%' . $search . '%')
+                           ->orWhere('IMMATRICULATION', 'like', '%' . $search . '%');
+                    });
                 });
             }
 
@@ -79,11 +106,11 @@ class RiskSubcategory extends Model
                 ]
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::lister a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('BaseMateriel::lister a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
                 'code_http' => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la récupération des sous-catégories de risque.'
+                'erreurs' => 'Une erreur est survenue lors de la récupération du matériel de base.'
             ];
         }
     }
@@ -102,10 +129,11 @@ class RiskSubcategory extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'         => 'required|string|max:255|unique:TB_RISK_SUBCATEGORY,INTITULE',
-                'DESCRIPTION'      => 'required|string',
-                'ID_RISK_CATEGORY' => 'required|integer|exists:TB_RISK_CATEGORY,ID',
-                'ENTREPRISE_ID'    => 'nullable|integer|exists:TB_ENTREPRISE,ID',
+                'BASE_ID'       => 'required|integer|exists:TB_BASE,ID',
+                'AERONEF_ID'    => 'nullable|integer|exists:TB_AERONEFS,ID',
+                'VEHICULE_ID'   => 'nullable|integer|exists:TB_VEHICULES,ID',
+                'EQUIPEMENT_ID' => 'nullable|integer|exists:TB_EQUIPEMENTS,ID',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -116,23 +144,21 @@ class RiskSubcategory extends Model
                 ];
             }
 
-            $subcategory = new self($inputs);
-            $subcategory->save();
-
-            // Load the category relation for the response
-            $subcategory->load('category');
+            $baseMateriel = new self($inputs);
+            $baseMateriel->save();
+            $baseMateriel->load(['base', 'aeronef', 'vehicule', 'equipement']);
 
             return [
                 'code_http' => 201,
                 'code_message' => 201,
-                'data' => $subcategory
+                'data' => $baseMateriel
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::ajouter a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('BaseMateriel::ajouter a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
                 'code_http' => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la création de la sous-catégorie de risque.'
+                'erreurs' => 'Une erreur est survenue lors de la création du matériel de base.'
             ];
         }
     }
@@ -140,31 +166,31 @@ class RiskSubcategory extends Model
     public static function recuperer($id)
     {
         try {
-            $subcategory = self::where('ID', $id)
+            $baseMateriel = self::where('ID', $id)
                 ->where('IS_DELETE', false)
                 ->whereNull('deleted_at')
-                ->with('category')
+                ->with(['base', 'aeronef', 'vehicule', 'equipement'])
                 ->first();
 
-            if (!$subcategory) {
+            if (!$baseMateriel) {
                 return [
                     'code_http' => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs' => 'Le matériel de base n\'existe pas.'
                 ];
             }
 
             return [
                 'code_http' => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data' => $baseMateriel
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::recuperer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('BaseMateriel::recuperer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
                 'code_http' => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la récupération de la sous-catégorie de risque.'
+                'erreurs' => 'Une erreur est survenue lors de la récupération du matériel de base.'
             ];
         }
     }
@@ -172,16 +198,16 @@ class RiskSubcategory extends Model
     public static function modifier(Request $request, $id)
     {
         try {
-            $subcategory = self::where('ID', $id)
+            $baseMateriel = self::where('ID', $id)
                 ->where('IS_DELETE', false)
                 ->whereNull('deleted_at')
                 ->first();
 
-            if (!$subcategory) {
+            if (!$baseMateriel) {
                 return [
                     'code_http' => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs' => 'Le matériel de base n\'existe pas.'
                 ];
             }
 
@@ -196,10 +222,11 @@ class RiskSubcategory extends Model
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'         => 'nullable|string|max:255|unique:TB_RISK_SUBCATEGORY,INTITULE,' . $id . ',ID',
-                'DESCRIPTION'      => 'nullable|string',
-                'ID_RISK_CATEGORY' => 'nullable|integer|exists:TB_RISK_CATEGORY,ID',
-                'ENTREPRISE_ID'    => 'nullable|integer|exists:TB_ENTREPRISE,ID',
+                'BASE_ID'       => 'nullable|integer|exists:TB_BASE,ID',
+                'AERONEF_ID'    => 'nullable|integer|exists:TB_AERONEFS,ID',
+                'VEHICULE_ID'   => 'nullable|integer|exists:TB_VEHICULES,ID',
+                'EQUIPEMENT_ID' => 'nullable|integer|exists:TB_EQUIPEMENTS,ID',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
@@ -210,20 +237,20 @@ class RiskSubcategory extends Model
                 ];
             }
 
-            $subcategory->update($inputs);
-            $subcategory->load('category');
+            $baseMateriel->update($inputs);
+            $baseMateriel->load(['base', 'aeronef', 'vehicule', 'equipement']);
 
             return [
                 'code_http' => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data' => $baseMateriel
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::modifier a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('BaseMateriel::modifier a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
                 'code_http' => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la modification de la sous-catégorie de risque.'
+                'erreurs' => 'Une erreur est survenue lors de la modification du matériel de base.'
             ];
         }
     }
@@ -231,31 +258,31 @@ class RiskSubcategory extends Model
     public static function supprimer($id)
     {
         try {
-            $subcategory = self::find($id);
+            $baseMateriel = self::find($id);
 
-            if (!$subcategory) {
+            if (!$baseMateriel) {
                 return [
                     'code_http' => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs' => 'Le matériel de base n\'existe pas.'
                 ];
             }
 
-            $subcategory->IS_DELETE = true;
-            $subcategory->save();
-            $subcategory->delete();
+            $baseMateriel->IS_DELETE = true;
+            $baseMateriel->save();
+            $baseMateriel->delete();
 
             return [
                 'code_http' => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data' => $baseMateriel
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::supprimer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('BaseMateriel::supprimer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
                 'code_http' => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la suppression de la sous-catégorie de risque.'
+                'erreurs' => 'Une erreur est survenue lors de la suppression du matériel de base.'
             ];
         }
     }
