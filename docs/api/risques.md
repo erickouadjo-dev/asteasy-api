@@ -33,6 +33,7 @@
   "NIVEAU_MAITRISE": "ELEVE",
   "DATE_STATUT_RISK": "2026-08-20",
   "STATUT_RISK": "MAITRISE",
+  "TOP_RISQUE": "OUI",
   "RESPONSABLE": 1,
   "DATE_CONTROLE": "2026-08-20",
   "COMMENTAIRES": "Balayage de piste rigoureux appliqué avant chaque rotation.",

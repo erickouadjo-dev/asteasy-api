@@ -21,6 +21,7 @@ class RiskCategory extends Model
     public $incrementing = true;
 
     protected $fillable = [
+        'CODE',
         'INTITULE',
         'DESCRIPTION',
         'ENTREPRISE_ID',
@@ -56,7 +57,8 @@ class RiskCategory extends Model
 
             if (!empty($search)) {
                 $query->where(function($q) use ($search) {
-                    $q->where('INTITULE', 'like', '%' . $search . '%')
+                    $q->where('CODE', 'like', '%' . $search . '%')
+                      ->orWhere('INTITULE', 'like', '%' . $search . '%')
                       ->orWhere('DESCRIPTION', 'like', '%' . $search . '%');
                 });
             }
@@ -100,6 +102,7 @@ class RiskCategory extends Model
             }
 
             $validator = Validator::make($inputs, [
+                'CODE'          => 'nullable|string|max:10',
                 'INTITULE'      => 'required|string|max:255|unique:TB_RISK_CATEGORY,INTITULE',
                 'DESCRIPTION'   => 'required|string',
                 'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
@@ -189,6 +192,7 @@ class RiskCategory extends Model
             }
 
             $validator = Validator::make($inputs, [
+                'CODE'          => 'nullable|string|max:10',
                 'INTITULE'      => 'nullable|string|max:255|unique:TB_RISK_CATEGORY,INTITULE,' . $id . ',ID',
                 'DESCRIPTION'   => 'nullable|string',
                 'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',

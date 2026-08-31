@@ -16,6 +16,7 @@
 ```json
 {
   "ID": 1,
+  "CODE": "ENV",
   "INTITULE": "Risques Professionnels",
   "DESCRIPTION": "Catégorie regroupant les risques de l'environnement de travail direct.",
   "ENTREPRISE_ID": 1,
