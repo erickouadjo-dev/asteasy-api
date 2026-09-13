@@ -8,22 +8,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-
 use App\Traits\BelongsToTenant;
 
-class RiskSubcategory extends Model
+class EventType extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
 
-    protected $table = 'TB_RISK_SUBCATEGORY';
+    protected $table = 'TB_EVENT_TYPE';
     protected $primaryKey = 'ID';
     public $timestamps = true;
     public $incrementing = true;
 
     protected $fillable = [
-        'INTITULE',
+        'CODE',
+        'LIBELLE',
         'DESCRIPTION',
-        'ID_RISK_CATEGORY',
         'ENTREPRISE_ID',
         'IS_DELETE',
     ];
@@ -40,9 +39,9 @@ class RiskSubcategory extends Model
         return $this->belongsTo(Entreprise::class, 'ENTREPRISE_ID', 'ID');
     }
 
-    public function category()
+    public function declarations()
     {
-        return $this->belongsTo(RiskCategory::class, 'ID_RISK_CATEGORY', 'ID');
+        return $this->hasMany(EventDeclaration::class, 'ID_EVENT_TYPE', 'ID');
     }
 
     public static function lister(Request $request)
@@ -53,12 +52,12 @@ class RiskSubcategory extends Model
             $search   = $request->input('search', '');
 
             $query = self::where('IS_DELETE', false)
-                ->whereNull('deleted_at')
-                ->with('category');
+                ->whereNull('deleted_at');
 
             if (!empty($search)) {
-                $query->where(function($q) use ($search) {
-                    $q->where('INTITULE', 'like', '%' . $search . '%')
+                $query->where(function ($q) use ($search) {
+                    $q->where('CODE', 'like', '%' . $search . '%')
+                      ->orWhere('LIBELLE', 'like', '%' . $search . '%')
                       ->orWhere('DESCRIPTION', 'like', '%' . $search . '%');
                 });
             }
@@ -75,15 +74,15 @@ class RiskSubcategory extends Model
                     'current_page' => $paginated->currentPage(),
                     'last_page'    => $paginated->lastPage(),
                     'from'         => $paginated->firstItem(),
-                    'to'           => $paginated->lastItem()
-                ]
+                    'to'           => $paginated->lastItem(),
+                ],
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::lister a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('EventType::lister a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
-                'code_http' => 500,
+                'code_http'    => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la récupération des sous-catégories de risque.'
+                'erreurs'      => 'Une erreur est survenue lors de la récupération des types d\'événements.',
             ];
         }
     }
@@ -95,44 +94,41 @@ class RiskSubcategory extends Model
 
             if (!is_array($inputs)) {
                 return [
-                    'code_http' => 400,
+                    'code_http'    => 400,
                     'code_message' => 'ERR_VALIDATION',
-                    'erreurs' => 'Corps de la requête vide.'
+                    'erreurs'      => 'Corps de la requête vide.',
                 ];
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'         => 'required|string|max:255|unique:TB_RISK_SUBCATEGORY,INTITULE',
-                'DESCRIPTION'      => 'nullable|string',
-                'ID_RISK_CATEGORY' => 'required|integer|exists:TB_RISK_CATEGORY,ID',
-                'ENTREPRISE_ID'    => 'nullable|integer|exists:TB_ENTREPRISE,ID',
+                'LIBELLE'       => 'required|string|max:255',
+                'CODE'          => 'nullable|string|max:50',
+                'DESCRIPTION'   => 'nullable|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
                 return [
-                    'code_http' => 400,
+                    'code_http'    => 400,
                     'code_message' => 'ERR_VALIDATION',
-                    'erreurs' => $validator->errors()->all()
+                    'erreurs'      => $validator->errors()->all(),
                 ];
             }
 
-            $subcategory = new self($inputs);
-            $subcategory->save();
-
-            // Load the category relation for the response
-            $subcategory->load('category');
+            $eventType = new self($inputs);
+            $eventType->save();
 
             return [
-                'code_http' => 201,
+                'code_http'    => 201,
                 'code_message' => 201,
-                'data' => $subcategory
+                'data'         => $eventType,
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::ajouter a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('EventType::ajouter a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
-                'code_http' => 500,
+                'code_http'    => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la création de la sous-catégorie de risque.'
+                'erreurs'      => 'Une erreur est survenue lors de la création du type d\'événement.',
             ];
         }
     }
@@ -140,31 +136,30 @@ class RiskSubcategory extends Model
     public static function recuperer($id)
     {
         try {
-            $subcategory = self::where('ID', $id)
+            $eventType = self::where('ID', $id)
                 ->where('IS_DELETE', false)
                 ->whereNull('deleted_at')
-                ->with('category')
                 ->first();
 
-            if (!$subcategory) {
+            if (!$eventType) {
                 return [
-                    'code_http' => 404,
+                    'code_http'    => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs'      => 'Le type d\'événement n\'existe pas.',
                 ];
             }
 
             return [
-                'code_http' => 200,
+                'code_http'    => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data'         => $eventType,
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::recuperer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('EventType::recuperer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
-                'code_http' => 500,
+                'code_http'    => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la récupération de la sous-catégorie de risque.'
+                'erreurs'      => 'Une erreur est survenue lors de la récupération du type d\'événement.',
             ];
         }
     }
@@ -172,16 +167,16 @@ class RiskSubcategory extends Model
     public static function modifier(Request $request, $id)
     {
         try {
-            $subcategory = self::where('ID', $id)
+            $eventType = self::where('ID', $id)
                 ->where('IS_DELETE', false)
                 ->whereNull('deleted_at')
                 ->first();
 
-            if (!$subcategory) {
+            if (!$eventType) {
                 return [
-                    'code_http' => 404,
+                    'code_http'    => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs'      => 'Le type d\'événement n\'existe pas.',
                 ];
             }
 
@@ -189,41 +184,40 @@ class RiskSubcategory extends Model
 
             if (!is_array($inputs)) {
                 return [
-                    'code_http' => 400,
+                    'code_http'    => 400,
                     'code_message' => 'ERR_VALIDATION',
-                    'erreurs' => 'Corps de la requête vide.'
+                    'erreurs'      => 'Corps de la requête vide.',
                 ];
             }
 
             $validator = Validator::make($inputs, [
-                'INTITULE'         => 'nullable|string|max:255|unique:TB_RISK_SUBCATEGORY,INTITULE,' . $id . ',ID',
-                'DESCRIPTION'      => 'nullable|string',
-                'ID_RISK_CATEGORY' => 'nullable|integer|exists:TB_RISK_CATEGORY,ID',
-                'ENTREPRISE_ID'    => 'nullable|integer|exists:TB_ENTREPRISE,ID',
+                'LIBELLE'       => 'sometimes|required|string|max:255',
+                'CODE'          => 'nullable|string|max:50',
+                'DESCRIPTION'   => 'nullable|string',
+                'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 
             if (!$validator->passes()) {
                 return [
-                    'code_http' => 400,
+                    'code_http'    => 400,
                     'code_message' => 'ERR_VALIDATION',
-                    'erreurs' => $validator->errors()->all()
+                    'erreurs'      => $validator->errors()->all(),
                 ];
             }
 
-            $subcategory->update($inputs);
-            $subcategory->load('category');
+            $eventType->update($inputs);
 
             return [
-                'code_http' => 200,
+                'code_http'    => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data'         => $eventType,
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::modifier a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('EventType::modifier a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
-                'code_http' => 500,
+                'code_http'    => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la modification de la sous-catégorie de risque.'
+                'erreurs'      => 'Une erreur est survenue lors de la modification du type d\'événement.',
             ];
         }
     }
@@ -231,31 +225,34 @@ class RiskSubcategory extends Model
     public static function supprimer($id)
     {
         try {
-            $subcategory = self::find($id);
+            $eventType = self::where('ID', $id)
+                ->where('IS_DELETE', false)
+                ->whereNull('deleted_at')
+                ->first();
 
-            if (!$subcategory) {
+            if (!$eventType) {
                 return [
-                    'code_http' => 404,
+                    'code_http'    => 404,
                     'code_message' => 'ERR_NOT_FOUND',
-                    'erreurs' => 'La sous-catégorie de risque n\'existe pas.'
+                    'erreurs'      => 'Le type d\'événement n\'existe pas.',
                 ];
             }
 
-            $subcategory->IS_DELETE = true;
-            $subcategory->save();
-            $subcategory->delete();
+            $eventType->IS_DELETE = true;
+            $eventType->save();
+            $eventType->delete();
 
             return [
-                'code_http' => 200,
+                'code_http'    => 200,
                 'code_message' => 200,
-                'data' => $subcategory
+                'data'         => 'Le type d\'événement a été supprimé avec succès.',
             ];
         } catch (\Exception $e) {
-            Log::error('RiskSubcategory::supprimer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('EventType::supprimer a échoué avec le message ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return [
-                'code_http' => 500,
+                'code_http'    => 500,
                 'code_message' => 'ERR_SERVER',
-                'erreurs' => 'Une erreur est survenue lors de la suppression de la sous-catégorie de risque.'
+                'erreurs'      => 'Une erreur est survenue lors de la suppression du type d\'événement.',
             ];
         }
     }

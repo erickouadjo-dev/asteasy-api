@@ -144,6 +144,15 @@ class BaseMateriel extends Model
                 ];
             }
 
+            $duplicateError = self::validerNonDuplication($inputs['BASE_ID'], $inputs);
+            if ($duplicateError) {
+                return [
+                    'code_http' => 422,
+                    'code_message' => 'ERR_DUPLICATE',
+                    'erreurs' => $duplicateError
+                ];
+            }
+
             $baseMateriel = new self($inputs);
             $baseMateriel->save();
             $baseMateriel->load(['base', 'aeronef', 'vehicule', 'equipement']);
@@ -161,6 +170,80 @@ class BaseMateriel extends Model
                 'erreurs' => 'Une erreur est survenue lors de la création du matériel de base.'
             ];
         }
+    }
+
+    public static function validerNonDuplication($baseId, $inputs, $ignoreId = null)
+    {
+        if (empty($baseId)) {
+            return null;
+        }
+
+        $query = self::where('IS_DELETE', false)
+            ->whereNull('deleted_at')
+            ->where('BASE_ID', $baseId);
+
+        if ($ignoreId) {
+            $query->where('ID', '!=', $ignoreId);
+        }
+
+        if (!empty($inputs['AERONEF_ID'])) {
+            $aeroId = $inputs['AERONEF_ID'];
+            $existsId = (clone $query)->where('AERONEF_ID', $aeroId)->exists();
+            if ($existsId) {
+                return 'Cet aéronef est déjà affecté à cette base.';
+            }
+
+            $aero = Aeronef::find($aeroId);
+            if ($aero && !empty($aero->IMMATRICULATION)) {
+                $immat = trim($aero->IMMATRICULATION);
+                $immatExists = (clone $query)->whereHas('aeronef', function($q) use ($immat) {
+                    $q->where('IMMATRICULATION', $immat);
+                })->exists();
+                if ($immatExists) {
+                    return "Un aéronef avec l'immatriculation '{$immat}' est déjà affecté à cette base.";
+                }
+            }
+        }
+
+        if (!empty($inputs['VEHICULE_ID'])) {
+            $vehId = $inputs['VEHICULE_ID'];
+            $existsId = (clone $query)->where('VEHICULE_ID', $vehId)->exists();
+            if ($existsId) {
+                return 'Ce véhicule est déjà affecté à cette base.';
+            }
+
+            $veh = Vehicule::find($vehId);
+            if ($veh && !empty($veh->IMMATRICULATION)) {
+                $immat = trim($veh->IMMATRICULATION);
+                $immatExists = (clone $query)->whereHas('vehicule', function($q) use ($immat) {
+                    $q->where('IMMATRICULATION', $immat);
+                })->exists();
+                if ($immatExists) {
+                    return "Un véhicule avec l'immatriculation '{$immat}' est déjà affecté à cette base.";
+                }
+            }
+        }
+
+        if (!empty($inputs['EQUIPEMENT_ID'])) {
+            $eqId = $inputs['EQUIPEMENT_ID'];
+            $existsId = (clone $query)->where('EQUIPEMENT_ID', $eqId)->exists();
+            if ($existsId) {
+                return 'Cet équipement est déjà affecté à cette base.';
+            }
+
+            $eq = Equipement::find($eqId);
+            if ($eq && !empty($eq->IMMATRICULATION)) {
+                $immat = trim($eq->IMMATRICULATION);
+                $immatExists = (clone $query)->whereHas('equipement', function($q) use ($immat) {
+                    $q->where('IMMATRICULATION', $immat);
+                })->exists();
+                if ($immatExists) {
+                    return "Un équipement avec l'immatriculation '{$immat}' est déjà affecté à cette base.";
+                }
+            }
+        }
+
+        return null;
     }
 
     public static function recuperer($id)
@@ -234,6 +317,16 @@ class BaseMateriel extends Model
                     'code_http' => 400,
                     'code_message' => 'ERR_VALIDATION',
                     'erreurs' => $validator->errors()->all()
+                ];
+            }
+
+            $targetBaseId = $inputs['BASE_ID'] ?? $baseMateriel->BASE_ID;
+            $duplicateError = self::validerNonDuplication($targetBaseId, $inputs, $id);
+            if ($duplicateError) {
+                return [
+                    'code_http' => 422,
+                    'code_message' => 'ERR_DUPLICATE',
+                    'erreurs' => $duplicateError
                 ];
             }
 

@@ -252,6 +252,10 @@ use App\Models\EventDeclaration as EventDeclarationResource;
 use App\Policies\EventDeclarationsPolicy;
 use App\Utility\PolicyResources\EventDeclarations as EventDeclarationsResourceHelper;
 
+use App\Models\EventType as EventTypeResource;
+use App\Policies\EventTypesPolicy;
+use App\Utility\PolicyResources\EventTypes as EventTypesResourceHelper;
+
 use App\Models\MatriceRisque as MatriceRisqueResource;
 use App\Policies\MatriceRisquesPolicy;
 use App\Utility\PolicyResources\MatriceRisques as MatriceRisquesResourceHelper;
@@ -409,6 +413,8 @@ class AuthServiceProvider extends ServiceProvider
         EventAnalyseResource::class => EventAnalysesPolicy::class,
         EventDeclarationsResourceHelper::class => EventDeclarationsPolicy::class,
         EventDeclarationResource::class => EventDeclarationsPolicy::class,
+        EventTypesResourceHelper::class => EventTypesPolicy::class,
+        EventTypeResource::class => EventTypesPolicy::class,
         MatriceRisquesResourceHelper::class => MatriceRisquesPolicy::class,
         MatriceRisqueResource::class => MatriceRisquesPolicy::class,
         TargEtiquettesResourceHelper::class => TargEtiquettesPolicy::class,

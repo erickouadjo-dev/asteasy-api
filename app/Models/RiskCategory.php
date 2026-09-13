@@ -104,7 +104,7 @@ class RiskCategory extends Model
             $validator = Validator::make($inputs, [
                 'CODE'          => 'nullable|string|max:10',
                 'INTITULE'      => 'required|string|max:255|unique:TB_RISK_CATEGORY,INTITULE',
-                'DESCRIPTION'   => 'required|string',
+                'DESCRIPTION'   => 'nullable|string',
                 'ENTREPRISE_ID' => 'nullable|integer|exists:TB_ENTREPRISE,ID',
             ]);
 

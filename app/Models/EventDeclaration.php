@@ -21,6 +21,7 @@ class EventDeclaration extends Model
 
     protected $fillable = [
         'REF_EVENT',
+        'ID_EVENT_TYPE',
         'TYPE_EVENT',
         'CONFIDENTIEL',
         'RAPORTEUR',
@@ -30,6 +31,8 @@ class EventDeclaration extends Model
         'CLIENT_MISSION',
         'ID_BASE_MATERIEL',
         'EVENT_LOCALISATION',
+        'PAYS',
+        'ADRESSE',
         'GPS_POSITION',
         'EVENT_DESCRIPTION',
         'FICHIERS_IMAGES',
@@ -38,6 +41,7 @@ class EventDeclaration extends Model
     ];
 
     protected $casts = [
+        'ID_EVENT_TYPE' => 'integer',
         'RAPORTEUR' => 'integer',
         'ID_BASE_MATERIEL' => 'integer',
         'ENTREPRISE_ID' => 'integer',
@@ -56,6 +60,17 @@ class EventDeclaration extends Model
         return $this->belongsTo(Utilisateur::class, 'RAPORTEUR', 'id');
     }
 
+    public function eventType()
+    {
+        return $this->belongsTo(EventType::class, 'ID_EVENT_TYPE', 'ID');
+    }
+
+    public function baseMateriel()
+    {
+        return $this->belongsTo(BaseMateriel::class, 'ID_BASE_MATERIEL', 'ID')
+                    ->with(['base', 'aeronef', 'vehicule', 'equipement']);
+    }
+
     public static function lister(Request $request)
     {
         try {
@@ -64,7 +79,8 @@ class EventDeclaration extends Model
             $search   = $request->input('search', '');
 
             $query = self::where('IS_DELETE', false)
-                ->whereNull('deleted_at');
+                ->whereNull('deleted_at')
+                ->with(['eventType', 'raporteurUser', 'baseMateriel']);
 
             if (!empty($search)) {
                 $query->where(function($q) use ($search) {
@@ -113,7 +129,8 @@ class EventDeclaration extends Model
 
             $validator = Validator::make($inputs, [
                 'REF_EVENT'          => 'required|string|max:255',
-                'TYPE_EVENT'         => 'required|string|max:255',
+                'ID_EVENT_TYPE'      => 'nullable|integer|exists:TB_EVENT_TYPE,ID',
+                'TYPE_EVENT'         => 'nullable|string|max:255',
                 'CONFIDENTIEL'       => 'required|string|in:OUI,NON',
                 'RAPORTEUR'          => 'nullable|integer|exists:utilisateurs,id',
                 'BASE_OPERATEUR'     => 'nullable|string|max:255',
@@ -122,6 +139,8 @@ class EventDeclaration extends Model
                 'CLIENT_MISSION'     => 'nullable|string|max:255',
                 'ID_BASE_MATERIEL'   => 'nullable|integer',
                 'EVENT_LOCALISATION' => 'required|string|max:255',
+                'PAYS'               => 'nullable|string|max:255',
+                'ADRESSE'            => 'nullable|string|max:500',
                 'GPS_POSITION'       => 'nullable|string|max:255',
                 'EVENT_DESCRIPTION'  => 'required|string',
                 'FICHIERS_IMAGES'    => 'nullable|string',
@@ -138,6 +157,7 @@ class EventDeclaration extends Model
 
             $eventDeclaration = new self($inputs);
             $eventDeclaration->save();
+            $eventDeclaration->load(['eventType', 'raporteurUser', 'baseMateriel']);
 
             return [
                 'code_http' => 201,
@@ -160,6 +180,7 @@ class EventDeclaration extends Model
             $eventDeclaration = self::where('ID', $id)
                 ->where('IS_DELETE', false)
                 ->whereNull('deleted_at')
+                ->with(['eventType', 'raporteurUser', 'baseMateriel'])
                 ->first();
 
             if (!$eventDeclaration) {
@@ -213,6 +234,7 @@ class EventDeclaration extends Model
 
             $validator = Validator::make($inputs, [
                 'REF_EVENT'          => 'nullable|string|max:255',
+                'ID_EVENT_TYPE'      => 'nullable|integer|exists:TB_EVENT_TYPE,ID',
                 'TYPE_EVENT'         => 'nullable|string|max:255',
                 'CONFIDENTIEL'       => 'nullable|string|in:OUI,NON',
                 'RAPORTEUR'          => 'nullable|integer|exists:utilisateurs,id',
@@ -222,6 +244,8 @@ class EventDeclaration extends Model
                 'CLIENT_MISSION'     => 'nullable|string|max:255',
                 'ID_BASE_MATERIEL'   => 'nullable|integer',
                 'EVENT_LOCALISATION' => 'nullable|string|max:255',
+                'PAYS'               => 'nullable|string|max:255',
+                'ADRESSE'            => 'nullable|string|max:500',
                 'GPS_POSITION'       => 'nullable|string|max:255',
                 'EVENT_DESCRIPTION'  => 'nullable|string',
                 'FICHIERS_IMAGES'    => 'nullable|string',
@@ -237,6 +261,7 @@ class EventDeclaration extends Model
             }
 
             $eventDeclaration->update($inputs);
+            $eventDeclaration->load(['eventType', 'raporteurUser', 'baseMateriel']);
 
             return [
                 'code_http' => 200,

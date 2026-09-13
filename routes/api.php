@@ -122,7 +122,7 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::post('/uploads', 'App\Http\Controllers\Api\V1\UploadsController@store');
 
     //departements
-    Route::get('/departements', 'App\Http\Controllers\Api\V1\DepartementsController@index');
+    // Route::get('/departements', 'App\Http\Controllers\Api\V1\DepartementsController@index');
 
     //entreprises
     Route::post('/entreprises', 'App\Http\Controllers\Api\V1\EntreprisesController@store');
@@ -194,6 +194,13 @@ Route::prefix('v1')->middleware(['cors', 'multi_authentication'])->group(functio
     Route::get('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@show');
     Route::put('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@update');
     Route::delete('/event-analyses/{id}', 'App\Http\Controllers\Api\V1\EventAnalysesController@destroy');
+
+    //event-types
+    Route::post('/event-types', 'App\Http\Controllers\Api\V1\EventTypesController@store');
+    Route::get('/event-types', 'App\Http\Controllers\Api\V1\EventTypesController@index');
+    Route::get('/event-types/{id}', 'App\Http\Controllers\Api\V1\EventTypesController@show');
+    Route::put('/event-types/{id}', 'App\Http\Controllers\Api\V1\EventTypesController@update');
+    Route::delete('/event-types/{id}', 'App\Http\Controllers\Api\V1\EventTypesController@destroy');
 
     //event-declarations
     Route::post('/event-declarations', 'App\Http\Controllers\Api\V1\EventDeclarationsController@store');
